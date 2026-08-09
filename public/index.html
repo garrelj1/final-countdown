@@ -128,6 +128,25 @@
     letter-spacing: .1em;
     color: rgba(234,246,255,.55);
   }
+  .seg { display: inline-flex; border: 1px solid rgba(34,230,255,.4); border-radius: 8px; overflow: hidden; }
+  .seg button {
+    border: 0; border-radius: 0; background: transparent; padding: 9px 16px; font-size: .68rem;
+  }
+  .seg button + button { border-left: 1px solid rgba(34,230,255,.28); }
+  .seg button[aria-pressed="true"] {
+    background: rgba(255,47,208,.3); color: #ffe9fa; box-shadow: inset 0 0 16px rgba(255,47,208,.35);
+  }
+  .hidden { display: none !important; }
+  #yt-wrap { margin: 16px auto 0; width: min(400px, 100%); }
+  #yt-frame {
+    aspect-ratio: 16 / 9; min-height: 200px; border-radius: 10px; overflow: hidden;
+    border: 1px solid rgba(34,230,255,.35); box-shadow: 0 0 26px rgba(34,230,255,.18); background: #000;
+  }
+  #yt-frame iframe { width: 100%; height: 100%; display: block; }
+  #yt-url {
+    margin-top: 10px; width: 100%; font-size: .72rem; letter-spacing: .02em; padding: 9px 10px;
+  }
+  #yt-status { margin-top: 8px; min-height: 1em; color: var(--yellow); text-transform: none; letter-spacing: .02em; }
   .panel label { display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; }
   input[type="range"] { width: 130px; accent-color: var(--magenta); }
   input[type="file"] { font: inherit; font-size: .68rem; color: rgba(234,246,255,.55); max-width: 230px; }
@@ -158,13 +177,27 @@
 
   <div class="panel">
     <div class="row">
+      <div class="seg" role="group" aria-label="Audio source">
+        <button data-source="youtube" aria-pressed="true">YouTube</button>
+        <button data-source="synth" aria-pressed="false">Synth</button>
+        <button data-source="file" aria-pressed="false">File</button>
+      </div>
       <label>Volume <input id="vol" type="range" min="0" max="100" value="70"></label>
-      <label>Your own track <input id="file" type="file" accept="audio/*"></label>
     </div>
-    <p class="note">
-      Audio is a synthesized homage to the riff, generated live in your browser.
-      Load an audio file above to play the real thing instead &mdash; it stays on your machine.
-    </p>
+
+    <div id="yt-wrap">
+      <div id="yt-frame"><div id="yt-player"></div></div>
+      <input id="yt-url" type="text" spellcheck="false"
+             placeholder="Paste a YouTube URL to swap the video"
+             aria-label="YouTube video URL">
+      <div id="yt-status" role="status"></div>
+    </div>
+
+    <div id="file-wrap" class="hidden">
+      <label style="margin-top:14px">Audio file <input id="file" type="file" accept="audio/*"></label>
+    </div>
+
+    <p class="note" id="source-note"></p>
   </div>
 </main>
 
@@ -374,8 +407,7 @@ function scheduleTick() {
   }
 }
 
-function musicStart() {
-  if (userTrack) { userTrack.play().catch(() => {}); return; }
+function synthStart() {
   initAudio();
   ctx.resume();
   if (schedTimer === null) {
@@ -386,22 +418,124 @@ function musicStart() {
   }
 }
 
-function musicPause() {
-  if (userTrack) { userTrack.pause(); return; }
-  if (!ctx) return;
-  ctx.suspend();
-}
-
-function musicResume() {
-  if (userTrack) { userTrack.play().catch(() => {}); return; }
-  if (!ctx) { musicStart(); return; }
-  ctx.resume();
-}
-
-function musicStop() {
-  if (userTrack) { userTrack.pause(); userTrack.currentTime = 0; }
+function synthStop() {
   if (schedTimer !== null) { clearInterval(schedTimer); schedTimer = null; }
   if (ctx) ctx.suspend();
+}
+
+/* ------------------------------------------------------------------ *
+ * YouTube IFrame Player API
+ * The player stays visible on purpose — YouTube's terms don't allow
+ * hiding it and using the embed as an audio-only source.
+ * ------------------------------------------------------------------ */
+let videoId = 'IHRvIQMYY5g';   // Europe — The Final Countdown (official). Paste any URL to swap.
+let ytPlayer = null, ytReady = false, ytApiPromise = null, ytPrimed = false;
+
+function parseVideoId(url) {
+  const s = String(url).trim();
+  if (/^[\w-]{11}$/.test(s)) return s;
+  const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+
+function loadYouTubeAPI() {
+  if (window.YT && window.YT.Player) return Promise.resolve();
+  if (ytApiPromise) return ytApiPromise;
+  ytApiPromise = new Promise((resolve, reject) => {
+    window.onYouTubeIframeAPIReady = resolve;
+    const s = document.createElement('script');
+    s.src = 'https://www.youtube.com/iframe_api';
+    s.onerror = () => reject(new Error('blocked'));
+    document.head.appendChild(s);
+    setTimeout(() => reject(new Error('timeout')), 12000);
+  });
+  return ytApiPromise;
+}
+
+function ensurePlayer() {
+  return loadYouTubeAPI().then(() => {
+    if (ytPlayer) return ytPlayer;
+    return new Promise(resolve => {
+      ytPlayer = new YT.Player('yt-player', {
+        videoId,
+        host: 'https://www.youtube-nocookie.com',  // no tracking cookies until play
+        playerVars: { playsinline: 1, rel: 0, modestbranding: 1 },
+        events: {
+          onReady: e => {
+            ytReady = true;
+            e.target.setVolume(+volumeSlider.value);
+            resolve(ytPlayer);
+          },
+          onStateChange: e => {
+            // Timer outlasting the song? Loop it rather than falling silent.
+            if (e.data === YT.PlayerState.ENDED && state === 'running') {
+              ytPlayer.seekTo(0, true);
+              ytPlayer.playVideo();
+            }
+          },
+          onError: () => ytStatus('That video can’t be embedded. Try another URL.'),
+        },
+      });
+    });
+  });
+}
+
+function ytStatus(msg) { document.getElementById('yt-status').textContent = msg || ''; }
+
+/* Browsers grant autoplay far more reliably if the player has already been
+   started once inside a real click. Do that silently when YouTube is picked. */
+function primePlayer() {
+  if (ytPrimed || !ytReady || !ytPlayer) return;
+  ytPrimed = true;
+  try {
+    ytPlayer.mute();
+    ytPlayer.playVideo();
+    setTimeout(() => {
+      if (state !== 'running') { ytPlayer.pauseVideo(); ytPlayer.seekTo(0, true); }
+      ytPlayer.unMute();
+      ytPlayer.setVolume(+volumeSlider.value);
+    }, 350);
+  } catch (_) { /* player not ready yet; Start will still try */ }
+}
+
+function ytPlay() {
+  ytStatus('');
+  ensurePlayer().then(p => {
+    p.unMute();
+    p.setVolume(+volumeSlider.value);
+    p.playVideo();
+    setTimeout(() => {
+      if (state === 'running' && ytReady && p.getPlayerState() !== YT.PlayerState.PLAYING) {
+        ytStatus('Your browser blocked autoplay — press play on the video once.');
+      }
+    }, 1200);
+  }).catch(() => ytStatus('Couldn’t load the YouTube player (blocked or offline).'));
+}
+
+function ytPause()  { if (ytReady && ytPlayer) ytPlayer.pauseVideo(); }
+function ytStop()   { if (ytReady && ytPlayer) { ytPlayer.pauseVideo(); ytPlayer.seekTo(0, true); } }
+
+/* ------------------------------------------------------------------ *
+ * Source dispatch — exactly one source is ever audible.
+ * ------------------------------------------------------------------ */
+function musicStart() {
+  if (source === 'youtube') return ytPlay();
+  if (source === 'file' && userTrack) { userTrack.play().catch(() => {}); return; }
+  synthStart();
+}
+
+function musicPause() {
+  if (source === 'youtube') return ytPause();
+  if (source === 'file' && userTrack) { userTrack.pause(); return; }
+  synthStop();
+}
+
+function musicResume() { musicStart(); }
+
+function musicStop() {
+  ytStop();
+  if (userTrack) { userTrack.pause(); userTrack.currentTime = 0; }
+  synthStop();
 }
 
 /* Big final chord when the clock hits zero. */
@@ -426,8 +560,13 @@ const startBtn = document.getElementById('start');
 const resetBtn = document.getElementById('reset');
 const volumeSlider = document.getElementById('vol');
 const fileInput = document.getElementById('file');
+const ytWrap = document.getElementById('yt-wrap');
+const ytUrl = document.getElementById('yt-url');
+const fileWrap = document.getElementById('file-wrap');
+const sourceNote = document.getElementById('source-note');
 
 let state = 'idle';        // idle | running | paused | done
+let source = 'youtube';    // youtube | synth | file
 let remaining = 0;         // seconds
 let deadline = 0;          // performance.now() ms
 let rafId = null;
@@ -543,6 +682,42 @@ volumeSlider.addEventListener('input', () => {
   const v = volumeSlider.value / 100;
   if (master) master.gain.value = v * 0.8;
   if (userTrack) userTrack.volume = v;
+  if (ytReady && ytPlayer) ytPlayer.setVolume(+volumeSlider.value);
+});
+
+const NOTES = {
+  youtube: 'Streams the official video straight from YouTube. The player stays visible — that’s how embedding is meant to work.',
+  synth:   'A synthesized homage to the riff, generated live in your browser. No network, no embed.',
+  file:    'Plays an audio file from your own machine. It never leaves this device.',
+};
+
+function setSource(next) {
+  if (next === source) return;
+  musicStop();
+  source = next;
+  document.querySelectorAll('[data-source]').forEach(b =>
+    b.setAttribute('aria-pressed', String(b.dataset.source === next)));
+  ytWrap.classList.toggle('hidden', next !== 'youtube');
+  fileWrap.classList.toggle('hidden', next !== 'file');
+  sourceNote.textContent = NOTES[next];
+  ytStatus('');
+  if (next === 'youtube') ensurePlayer().then(primePlayer).catch(() => {});
+  if (state === 'running') musicStart();
+}
+
+document.querySelectorAll('[data-source]').forEach(btn =>
+  btn.addEventListener('click', () => setSource(btn.dataset.source)));
+
+ytUrl.addEventListener('change', () => {
+  const id = parseVideoId(ytUrl.value);
+  if (!id) { ytStatus(ytUrl.value.trim() ? 'That doesn’t look like a YouTube link.' : ''); return; }
+  videoId = id;
+  ytUrl.value = '';
+  ytStatus('');
+  if (ytReady && ytPlayer) {
+    if (state === 'running') ytPlayer.loadVideoById(id);
+    else { ytPlayer.cueVideoById(id); ytPrimed = false; }
+  }
 });
 
 fileInput.addEventListener('change', () => {
@@ -559,8 +734,13 @@ fileInput.addEventListener('change', () => {
 window.addEventListener('pagehide', musicStop);
 
 remaining = parseDuration(input.value) || 0;
+sourceNote.textContent = NOTES[source];
 syncButtons();
 render();
+
+// YouTube is the default source, so build the player up front. Start then has
+// a ready player to talk to and inherits the click's transient activation.
+if (source === 'youtube') ensurePlayer().catch(() => ytStatus('Couldn’t load the YouTube player.'));
 </script>
 </body>
 </html>
