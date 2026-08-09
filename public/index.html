@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Final Countdown</title>
+<meta name="description" content="A countdown timer that plays the riff while it runs — and only while it runs.">
+<meta name="theme-color" content="#07020f">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Final Countdown">
+<meta property="og:description" content="A countdown timer that plays the riff while it runs — and only while it runs.">
+<meta name="twitter:card" content="summary">
+<style>
+  :root {
+    --cyan: #22e6ff;
+    --magenta: #ff2fd0;
+    --yellow: #ffd23f;
+    --bg: #07020f;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background:
+      radial-gradient(ellipse at 50% 120%, #4a0f6b 0%, transparent 60%),
+      radial-gradient(ellipse at 50% -20%, #0b2a5e 0%, transparent 55%),
+      var(--bg);
+    color: #eaf6ff;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+  }
+  /* horizon grid */
+  body::after {
+    content: "";
+    position: fixed;
+    left: -50%; right: -50%; bottom: 0; height: 45vh;
+    background-image:
+      repeating-linear-gradient(to right, rgba(255,47,208,.35) 0 1px, transparent 1px 80px),
+      repeating-linear-gradient(to bottom, rgba(34,230,255,.30) 0 1px, transparent 1px 60px);
+    transform: perspective(320px) rotateX(72deg);
+    transform-origin: bottom center;
+    pointer-events: none;
+    opacity: .5;
+  }
+  main {
+    position: relative;
+    z-index: 1;
+    width: min(680px, 100%);
+    text-align: center;
+  }
+  h1 {
+    margin: 0 0 4px;
+    font-size: clamp(1.1rem, 4vw, 1.8rem);
+    letter-spacing: .35em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    text-shadow: 0 0 12px rgba(34,230,255,.8), 0 0 42px rgba(34,230,255,.35);
+  }
+  .sub {
+    margin: 0 0 28px;
+    font-size: .72rem;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+    color: rgba(255,47,208,.85);
+  }
+  #display {
+    font-size: clamp(3rem, 17vw, 7.5rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: .04em;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+    text-shadow: 0 0 10px var(--cyan), 0 0 40px rgba(34,230,255,.55), 0 0 90px rgba(255,47,208,.4);
+    margin: 8px 0 18px;
+    transition: color .2s;
+  }
+  #display.warn { color: var(--yellow); text-shadow: 0 0 12px var(--yellow), 0 0 55px rgba(255,120,0,.6); animation: pulse .5s steps(2) infinite; }
+  #display.done { color: var(--magenta); text-shadow: 0 0 14px var(--magenta), 0 0 70px rgba(255,47,208,.7); }
+  @keyframes pulse { 50% { opacity: .35; } }
+
+  .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; align-items: center; }
+  .row + .row { margin-top: 14px; }
+
+  input[type="text"] {
+    background: rgba(3,10,26,.8);
+    border: 1px solid rgba(34,230,255,.5);
+    border-radius: 8px;
+    color: #fff;
+    font: inherit;
+    font-size: 1.35rem;
+    letter-spacing: .12em;
+    text-align: center;
+    padding: 12px 14px;
+    width: 190px;
+    outline: none;
+  }
+  input[type="text"]:focus { border-color: var(--magenta); box-shadow: 0 0 0 3px rgba(255,47,208,.18); }
+
+  button {
+    font: inherit;
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    font-size: .8rem;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(34,230,255,.55);
+    background: linear-gradient(180deg, rgba(34,230,255,.16), rgba(34,230,255,.04));
+    color: #dffbff;
+    cursor: pointer;
+    transition: transform .08s, box-shadow .15s, background .15s;
+  }
+  button:hover:not(:disabled) { box-shadow: 0 0 18px rgba(34,230,255,.45); background: rgba(34,230,255,.25); }
+  button:active:not(:disabled) { transform: translateY(1px); }
+  button:disabled { opacity: .35; cursor: not-allowed; }
+  button.primary { border-color: var(--magenta); background: linear-gradient(180deg, rgba(255,47,208,.28), rgba(255,47,208,.06)); color: #ffe9fa; }
+  button.primary:hover:not(:disabled) { box-shadow: 0 0 22px rgba(255,47,208,.5); background: rgba(255,47,208,.35); }
+  button.chip { padding: 7px 12px; font-size: .7rem; border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.05); }
+
+  .panel {
+    margin-top: 30px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,.1);
+    font-size: .68rem;
+    letter-spacing: .1em;
+    color: rgba(234,246,255,.55);
+  }
+  .panel label { display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; }
+  input[type="range"] { width: 130px; accent-color: var(--magenta); }
+  input[type="file"] { font: inherit; font-size: .68rem; color: rgba(234,246,255,.55); max-width: 230px; }
+  .note { margin-top: 14px; line-height: 1.7; text-transform: none; letter-spacing: .02em; font-size: .68rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>The Final Countdown</h1>
+  <p class="sub">Music plays only while the clock runs</p>
+
+  <div id="display">00:00</div>
+
+  <div class="row">
+    <input id="input" type="text" value="00:30" placeholder="mm:ss" aria-label="Countdown duration">
+    <button id="start" class="primary">Start</button>
+    <button id="reset" disabled>Reset</button>
+  </div>
+
+  <div class="row">
+    <button class="chip" data-preset="30">30s</button>
+    <button class="chip" data-preset="60">1m</button>
+    <button class="chip" data-preset="180">3m</button>
+    <button class="chip" data-preset="300">5m</button>
+    <button class="chip" data-preset="600">10m</button>
+    <button class="chip" data-preset="1500">25m</button>
+  </div>
+
+  <div class="panel">
+    <div class="row">
+      <label>Volume <input id="vol" type="range" min="0" max="100" value="70"></label>
+      <label>Your own track <input id="file" type="file" accept="audio/*"></label>
+    </div>
+    <p class="note">
+      Audio is a synthesized homage to the riff, generated live in your browser.
+      Load an audio file above to play the real thing instead &mdash; it stays on your machine.
+    </p>
+  </div>
+</main>
+
+<script>
+/* ------------------------------------------------------------------ *
+ * Time parsing / formatting
+ * ------------------------------------------------------------------ */
+function parseDuration(raw) {
+  const s = String(raw).trim();
+  if (!s) return null;
+  // "90" -> 90s, "5:00" -> 5m, "1:02:03" -> 1h2m3s, "5m", "1h30m"
+  if (/^\d+$/.test(s)) return parseInt(s, 10);
+  if (/^[\d:]+$/.test(s)) {
+    const parts = s.split(':').map(p => parseInt(p || '0', 10));
+    if (parts.some(isNaN) || parts.length > 3) return null;
+    return parts.reduce((acc, p) => acc * 60 + p, 0);
+  }
+  const m = s.match(/^(?:(\d+)\s*h)?\s*(?:(\d+)\s*m)?\s*(?:(\d+)\s*s)?$/i);
+  if (m && (m[1] || m[2] || m[3])) {
+    return (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0);
+  }
+  return null;
+}
+
+function format(totalSeconds) {
+  const t = Math.max(0, Math.ceil(totalSeconds));
+  const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, s = t % 60;
+  const pad = n => String(n).padStart(2, '0');
+  return h ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+}
+
+/* ------------------------------------------------------------------ *
+ * The riff — an approximation of the Europe hook, easy to tweak.
+ * Beats are relative to the top of a 16-beat (4-bar) loop.
+ * ------------------------------------------------------------------ */
+const BPM = 118;
+const BEAT = 60 / BPM;
+const LOOP_BEATS = 16;
+
+const MELODY = [ // [note, startBeat, durationBeats]
+  ['D5',  0,   0.5], ['C#5', 0.5, 0.5], ['D5',  1,   0.5], ['A4',  1.5, 1.5],
+  ['G4',  4,   0.5], ['F#4', 4.5, 0.5], ['G4',  5,   0.5], ['D5',  5.5, 1.5],
+  ['C#5', 8,   0.5], ['B4',  8.5, 0.5], ['C#5', 9,   0.5], ['F#4', 9.5, 1.5],
+  ['G4', 12,   0.5], ['A4', 12.5, 0.5], ['B4', 13,   0.5], ['C#5',13.5, 0.5],
+  ['D5', 14,   2.0],
+];
+const BASS_ROOTS = ['D2', 'G2', 'F#2', 'B2']; // one per bar
+
+const SEMITONES = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+function noteFreq(name) {
+  const m = /^([A-G])(#|b)?(-?\d+)$/.exec(name);
+  const semi = SEMITONES[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0);
+  const midi = (parseInt(m[3], 10) + 1) * 12 + semi;
+  return 440 * Math.pow(2, (midi - 69) / 12);
+}
+
+/* Build one loop's worth of scheduled events, sorted by beat. */
+function buildEvents() {
+  const ev = [];
+  for (const [note, beat, dur] of MELODY) {
+    ev.push({ beat, kind: 'lead', freq: noteFreq(note), dur: dur * BEAT });
+  }
+  for (let bar = 0; bar < 4; bar++) {
+    const root = noteFreq(BASS_ROOTS[bar]);
+    for (let i = 0; i < 8; i++) {           // eighth-note pulse
+      const beat = bar * 4 + i * 0.5;
+      ev.push({ beat, kind: 'bass', freq: i % 4 === 3 ? root * 2 : root, dur: 0.4 * BEAT });
+      ev.push({ beat, kind: 'hat' });
+      if (i % 4 === 0) ev.push({ beat, kind: 'kick' });
+      if (i % 4 === 2) ev.push({ beat, kind: 'snare' });
+    }
+  }
+  return ev.sort((a, b) => a.beat - b.beat);
+}
+const EVENTS = buildEvents();
+
+/* ------------------------------------------------------------------ *
+ * Synth engine
+ * ------------------------------------------------------------------ */
+let ctx = null, master = null, delaySend = null, noiseBuf = null;
+let schedTimer = null, eventIndex = 0, loopOrigin = 0;
+const LOOKAHEAD = 0.12; // seconds of audio scheduled in advance
+
+function initAudio() {
+  if (ctx) return;
+  ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+  master = ctx.createGain();
+  master.gain.value = volumeSlider.value / 100 * 0.8;
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.value = -14;
+  comp.ratio.value = 5;
+  master.connect(comp).connect(ctx.destination);
+
+  // 80s slapback echo
+  const delay = ctx.createDelay(1);
+  delay.delayTime.value = BEAT * 0.75;
+  const fb = ctx.createGain(); fb.gain.value = 0.32;
+  delaySend = ctx.createGain(); delaySend.gain.value = 0.3;
+  delaySend.connect(delay);
+  delay.connect(fb).connect(delay);
+  delay.connect(master);
+
+  const frames = Math.floor(ctx.sampleRate * 0.5);
+  noiseBuf = ctx.createBuffer(1, frames, ctx.sampleRate);
+  const data = noiseBuf.getChannelData(0);
+  for (let i = 0; i < frames; i++) data[i] = Math.random() * 2 - 1;
+}
+
+function lead(t, freq, dur) {
+  const amp = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.Q.value = 7;
+  filter.frequency.setValueAtTime(5200, t);
+  filter.frequency.exponentialRampToValueAtTime(1400, t + dur);
+
+  const oscs = [
+    Object.assign(ctx.createOscillator(), { type: 'sawtooth' }),
+    Object.assign(ctx.createOscillator(), { type: 'square' }),
+    Object.assign(ctx.createOscillator(), { type: 'sawtooth' }),
+  ];
+  oscs[0].frequency.value = freq;
+  oscs[1].frequency.value = freq; oscs[1].detune.value = 8;
+  oscs[2].frequency.value = freq * 2; oscs[2].detune.value = -6;
+
+  const mix = ctx.createGain(); mix.gain.value = 0.33;
+  oscs.forEach(o => { o.connect(mix); o.start(t); o.stop(t + dur + 0.2); });
+  mix.connect(filter).connect(amp);
+  amp.connect(master);
+  amp.connect(delaySend);
+
+  amp.gain.setValueAtTime(0.0001, t);
+  amp.gain.linearRampToValueAtTime(0.42, t + 0.012);
+  amp.gain.linearRampToValueAtTime(0.30, t + Math.min(0.12, dur));
+  amp.gain.setTargetAtTime(0.0001, t + dur * 0.85, 0.05);
+}
+
+function bass(t, freq, dur) {
+  const osc = ctx.createOscillator();
+  osc.type = 'sawtooth';
+  osc.frequency.value = freq;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 420;
+  filter.Q.value = 3;
+  const amp = ctx.createGain();
+  amp.gain.setValueAtTime(0.0001, t);
+  amp.gain.linearRampToValueAtTime(0.45, t + 0.01);
+  amp.gain.setTargetAtTime(0.0001, t + dur * 0.6, 0.04);
+  osc.connect(filter).connect(amp).connect(master);
+  osc.start(t); osc.stop(t + dur + 0.15);
+}
+
+function noise(t, { dur, hp, gain }) {
+  const src = ctx.createBufferSource();
+  src.buffer = noiseBuf;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'highpass';
+  filter.frequency.value = hp;
+  const amp = ctx.createGain();
+  amp.gain.setValueAtTime(gain, t);
+  amp.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.connect(filter).connect(amp).connect(master);
+  src.start(t); src.stop(t + dur + 0.05);
+}
+
+function kick(t) {
+  const osc = ctx.createOscillator();
+  osc.frequency.setValueAtTime(140, t);
+  osc.frequency.exponentialRampToValueAtTime(45, t + 0.11);
+  const amp = ctx.createGain();
+  amp.gain.setValueAtTime(0.9, t);
+  amp.gain.exponentialRampToValueAtTime(0.0001, t + 0.24);
+  osc.connect(amp).connect(master);
+  osc.start(t); osc.stop(t + 0.3);
+}
+
+function playEvent(ev, t) {
+  switch (ev.kind) {
+    case 'lead':  lead(t, ev.freq, ev.dur); break;
+    case 'bass':  bass(t, ev.freq, ev.dur); break;
+    case 'kick':  kick(t); break;
+    case 'snare': noise(t, { dur: 0.17, hp: 1400, gain: 0.32 }); break;
+    case 'hat':   noise(t, { dur: 0.035, hp: 7000, gain: 0.09 }); break;
+  }
+}
+
+/* Lookahead scheduler. While the context is suspended currentTime freezes,
+   so this naturally stops queueing new notes. */
+function scheduleTick() {
+  // Background tabs throttle setInterval; if we've fallen behind, jump the
+  // loop forward instead of dumping a pile of overdue notes at once.
+  if (loopOrigin + EVENTS[eventIndex].beat * BEAT < ctx.currentTime - 0.4) {
+    loopOrigin = ctx.currentTime;
+    eventIndex = 0;
+  }
+  const horizon = ctx.currentTime + LOOKAHEAD;
+  while (loopOrigin + EVENTS[eventIndex].beat * BEAT < horizon) {
+    const ev = EVENTS[eventIndex];
+    playEvent(ev, Math.max(ctx.currentTime, loopOrigin + ev.beat * BEAT));
+    eventIndex++;
+    if (eventIndex >= EVENTS.length) {
+      eventIndex = 0;
+      loopOrigin += LOOP_BEATS * BEAT;
+    }
+  }
+}
+
+function musicStart() {
+  if (userTrack) { userTrack.play().catch(() => {}); return; }
+  initAudio();
+  ctx.resume();
+  if (schedTimer === null) {
+    loopOrigin = ctx.currentTime + 0.08;
+    eventIndex = 0;
+    schedTimer = setInterval(scheduleTick, 25);
+    scheduleTick();
+  }
+}
+
+function musicPause() {
+  if (userTrack) { userTrack.pause(); return; }
+  if (!ctx) return;
+  ctx.suspend();
+}
+
+function musicResume() {
+  if (userTrack) { userTrack.play().catch(() => {}); return; }
+  if (!ctx) { musicStart(); return; }
+  ctx.resume();
+}
+
+function musicStop() {
+  if (userTrack) { userTrack.pause(); userTrack.currentTime = 0; }
+  if (schedTimer !== null) { clearInterval(schedTimer); schedTimer = null; }
+  if (ctx) ctx.suspend();
+}
+
+/* Big final chord when the clock hits zero. */
+function fanfare() {
+  initAudio();
+  ctx.resume().then(() => {
+    const t = ctx.currentTime + 0.02;
+    ['B2', 'F#3', 'B3', 'D4', 'F#4'].forEach((n, i) => {
+      lead(t + i * 0.045, noteFreq(n), 1.9);
+    });
+    kick(t);
+    setTimeout(() => { if (state !== 'running') ctx.suspend(); }, 2600);
+  });
+}
+
+/* ------------------------------------------------------------------ *
+ * Timer
+ * ------------------------------------------------------------------ */
+const display = document.getElementById('display');
+const input = document.getElementById('input');
+const startBtn = document.getElementById('start');
+const resetBtn = document.getElementById('reset');
+const volumeSlider = document.getElementById('vol');
+const fileInput = document.getElementById('file');
+
+let state = 'idle';        // idle | running | paused | done
+let remaining = 0;         // seconds
+let deadline = 0;          // performance.now() ms
+let rafId = null;
+let userTrack = null;
+
+function render() {
+  display.textContent = state === 'done' ? '00:00' : format(remaining);
+  display.classList.toggle('warn', state === 'running' && remaining <= 10);
+  display.classList.toggle('done', state === 'done');
+  document.title = state === 'running'
+    ? `${format(remaining)} — Final Countdown`
+    : 'The Final Countdown';
+}
+
+function tick() {
+  remaining = (deadline - performance.now()) / 1000;
+  if (remaining <= 0) {
+    remaining = 0;
+    finish();
+    return;
+  }
+  render();
+  rafId = requestAnimationFrame(tick);
+}
+
+function start() {
+  const secs = parseDuration(input.value);
+  if (!secs || secs <= 0) {
+    input.value = '';
+    input.placeholder = 'try 5:00';
+    input.focus();
+    return;
+  }
+  remaining = secs;
+  deadline = performance.now() + secs * 1000;
+  state = 'running';
+  musicStart();
+  rafId = requestAnimationFrame(tick);
+  syncButtons();
+  render();
+}
+
+function pause() {
+  if (rafId) cancelAnimationFrame(rafId), rafId = null;
+  remaining = Math.max(0, (deadline - performance.now()) / 1000);
+  state = 'paused';
+  musicPause();
+  syncButtons();
+  render();
+}
+
+function resume() {
+  deadline = performance.now() + remaining * 1000;
+  state = 'running';
+  musicResume();
+  rafId = requestAnimationFrame(tick);
+  syncButtons();
+  render();
+}
+
+function finish() {
+  if (rafId) cancelAnimationFrame(rafId), rafId = null;
+  state = 'done';
+  musicStop();
+  fanfare();
+  syncButtons();
+  render();
+}
+
+function reset() {
+  if (rafId) cancelAnimationFrame(rafId), rafId = null;
+  state = 'idle';
+  remaining = parseDuration(input.value) || 0;
+  musicStop();
+  syncButtons();
+  render();
+}
+
+function syncButtons() {
+  startBtn.textContent = state === 'running' ? 'Pause' : state === 'paused' ? 'Resume' : 'Start';
+  resetBtn.disabled = state === 'idle';
+  input.disabled = state === 'running' || state === 'paused';
+}
+
+startBtn.addEventListener('click', () => {
+  if (state === 'running') pause();
+  else if (state === 'paused') resume();
+  else start();
+});
+resetBtn.addEventListener('click', reset);
+
+input.addEventListener('input', () => { if (state === 'idle') { remaining = parseDuration(input.value) || 0; render(); } });
+input.addEventListener('keydown', e => { if (e.key === 'Enter' && state === 'idle') start(); });
+
+document.querySelectorAll('[data-preset]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (state === 'running' || state === 'paused') reset();
+    input.value = format(+btn.dataset.preset);
+    remaining = +btn.dataset.preset;
+    state = 'idle';
+    syncButtons();
+    render();
+  });
+});
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space') { e.preventDefault(); startBtn.click(); }
+  if (e.key.toLowerCase() === 'r') reset();
+});
+
+volumeSlider.addEventListener('input', () => {
+  const v = volumeSlider.value / 100;
+  if (master) master.gain.value = v * 0.8;
+  if (userTrack) userTrack.volume = v;
+});
+
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files[0];
+  if (userTrack) { userTrack.pause(); URL.revokeObjectURL(userTrack.src); userTrack = null; }
+  if (!file) return;
+  userTrack = new Audio(URL.createObjectURL(file));
+  userTrack.loop = true;
+  userTrack.volume = volumeSlider.value / 100;
+  if (state === 'running') { musicStop(); musicStart(); }
+});
+
+// Never let audio outlive a hidden tab while paused mid-song.
+window.addEventListener('pagehide', musicStop);
+
+remaining = parseDuration(input.value) || 0;
+syncButtons();
+render();
+</script>
+</body>
+</html>
