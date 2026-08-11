@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Final Countdown</title>
 <meta name="description" content="A countdown timer that plays the riff while it runs — and only while it runs.">
 <meta name="theme-color" content="#07020f">
@@ -19,7 +19,10 @@
     --bg: #07020f;
   }
   * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; }
+  html { height: 100%; }
+  /* min-height, not height: with flex centering, content taller than the
+     viewport would otherwise get its top clipped off-screen unreachably. */
+  body { min-height: 100%; margin: 0; }
   body {
     background:
       radial-gradient(ellipse at 50% 120%, #4a0f6b 0%, transparent 60%),
@@ -31,6 +34,8 @@
     align-items: center;
     justify-content: center;
     padding: 24px;
+    padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
+             max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
     overflow-x: hidden;
   }
   /* horizon grid */
@@ -139,7 +144,7 @@
   .hidden { display: none !important; }
   #yt-wrap { margin: 16px auto 0; width: min(400px, 100%); }
   #yt-frame {
-    aspect-ratio: 16 / 9; min-height: 200px; border-radius: 10px; overflow: hidden;
+    aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden;
     border: 1px solid rgba(34,230,255,.35); box-shadow: 0 0 26px rgba(34,230,255,.18); background: #000;
   }
   #yt-frame iframe { width: 100%; height: 100%; display: block; }
@@ -151,6 +156,38 @@
   input[type="range"] { width: 130px; accent-color: var(--magenta); }
   input[type="file"] { font: inherit; font-size: .68rem; color: rgba(234,246,255,.55); max-width: 230px; }
   .note { margin-top: 14px; line-height: 1.7; text-transform: none; letter-spacing: .02em; font-size: .68rem; }
+
+  /* Touch devices: 16px inputs so iOS doesn't zoom the page on focus,
+     and roomier tap targets on the small controls. */
+  @media (hover: none) and (pointer: coarse) {
+    #yt-url { font-size: 16px; }
+    button.chip { padding: 10px 14px; }
+    .seg button { padding: 12px 16px; }
+    input[type="range"] { width: 150px; }
+  }
+
+  /* Narrow phones */
+  @media (max-width: 480px) {
+    body { padding: 16px 12px; }
+    h1 { letter-spacing: .2em; }
+    .sub { margin-bottom: 20px; }
+    #input { width: 100%; }
+    #start, #reset { flex: 1; }
+    .panel { margin-top: 22px; }
+  }
+
+  /* Short windows: landscape phones and small laptop viewports */
+  @media (max-height: 700px) {
+    #display { font-size: clamp(2.4rem, 13vh, 6rem); margin-bottom: 12px; }
+    .sub { margin-bottom: 16px; }
+    .panel { margin-top: 18px; padding-top: 12px; }
+    #yt-wrap { width: min(320px, 100%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #display.warn { animation: none; }
+    button { transition: none; }
+  }
 </style>
 </head>
 <body>
@@ -428,7 +465,8 @@ function synthStop() {
  * The player stays visible on purpose — YouTube's terms don't allow
  * hiding it and using the embed as an audio-only source.
  * ------------------------------------------------------------------ */
-let videoId = 'IHRvIQMYY5g';   // Europe — The Final Countdown (official). Paste any URL to swap.
+let videoId = '9jK-NcRmVcw';   // Default video. Paste any URL to swap.
+let videoStart = 117;          // Seconds to start from — honours t= in pasted URLs.
 let ytPlayer = null, ytReady = false, ytApiPromise = null, ytPrimed = false;
 
 function parseVideoId(url) {
@@ -436,6 +474,16 @@ function parseVideoId(url) {
   if (/^[\w-]{11}$/.test(s)) return s;
   const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/);
   return m ? m[1] : null;
+}
+
+// YouTube writes timestamps as t=117, t=117s or t=1h57m3s depending on where
+// the link was copied from — accept all of them.
+function parseStartTime(url) {
+  const m = String(url).match(/[?&#](?:t|start)=(\d[\dhms]*)/);
+  if (!m) return 0;
+  if (/^\d+$/.test(m[1])) return +m[1];
+  const p = m[1].match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/);
+  return p ? (+p[1] || 0) * 3600 + (+p[2] || 0) * 60 + (+p[3] || 0) : 0;
 }
 
 function loadYouTubeAPI() {
@@ -459,7 +507,7 @@ function ensurePlayer() {
       ytPlayer = new YT.Player('yt-player', {
         videoId,
         host: 'https://www.youtube-nocookie.com',  // no tracking cookies until play
-        playerVars: { playsinline: 1, rel: 0, modestbranding: 1 },
+        playerVars: { playsinline: 1, rel: 0, modestbranding: 1, start: videoStart },
         events: {
           onReady: e => {
             ytReady = true;
@@ -469,7 +517,7 @@ function ensurePlayer() {
           onStateChange: e => {
             // Timer outlasting the song? Loop it rather than falling silent.
             if (e.data === YT.PlayerState.ENDED && state === 'running') {
-              ytPlayer.seekTo(0, true);
+              ytPlayer.seekTo(videoStart, true);
               ytPlayer.playVideo();
             }
           },
@@ -491,7 +539,7 @@ function primePlayer() {
     ytPlayer.mute();
     ytPlayer.playVideo();
     setTimeout(() => {
-      if (state !== 'running') { ytPlayer.pauseVideo(); ytPlayer.seekTo(0, true); }
+      if (state !== 'running') { ytPlayer.pauseVideo(); ytPlayer.seekTo(videoStart, true); }
       ytPlayer.unMute();
       ytPlayer.setVolume(+volumeSlider.value);
     }, 350);
@@ -513,7 +561,7 @@ function ytPlay() {
 }
 
 function ytPause()  { if (ytReady && ytPlayer) ytPlayer.pauseVideo(); }
-function ytStop()   { if (ytReady && ytPlayer) { ytPlayer.pauseVideo(); ytPlayer.seekTo(0, true); } }
+function ytStop()   { if (ytReady && ytPlayer) { ytPlayer.pauseVideo(); ytPlayer.seekTo(videoStart, true); } }
 
 /* ------------------------------------------------------------------ *
  * Source dispatch — exactly one source is ever audible.
@@ -712,11 +760,12 @@ ytUrl.addEventListener('change', () => {
   const id = parseVideoId(ytUrl.value);
   if (!id) { ytStatus(ytUrl.value.trim() ? 'That doesn’t look like a YouTube link.' : ''); return; }
   videoId = id;
+  videoStart = parseStartTime(ytUrl.value);
   ytUrl.value = '';
   ytStatus('');
   if (ytReady && ytPlayer) {
-    if (state === 'running') ytPlayer.loadVideoById(id);
-    else { ytPlayer.cueVideoById(id); ytPrimed = false; }
+    if (state === 'running') ytPlayer.loadVideoById({ videoId: id, startSeconds: videoStart });
+    else { ytPlayer.cueVideoById({ videoId: id, startSeconds: videoStart }); ytPrimed = false; }
   }
 });
 
