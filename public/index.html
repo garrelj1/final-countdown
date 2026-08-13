@@ -3,14 +3,122 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The Final Countdown</title>
-<meta name="description" content="A countdown timer that plays the riff while it runs — and only while it runs.">
+<title>Final Countdown Timer — Online Timer That Plays The Song</title>
+<meta name="description" content="A free online countdown timer that plays The Final Countdown while it runs — and stops the second you pause. No signup, no install, works on any device.">
 <meta name="theme-color" content="#07020f">
+<link rel="canonical" href="https://finalcountdown.app/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
-<meta property="og:title" content="The Final Countdown">
-<meta property="og:description" content="A countdown timer that plays the riff while it runs — and only while it runs.">
-<meta name="twitter:card" content="summary">
+<meta property="og:site_name" content="Final Countdown Timer">
+<meta property="og:url" content="https://finalcountdown.app/">
+<meta property="og:title" content="Final Countdown Timer — the timer that plays the song">
+<meta property="og:description" content="Set a timer, hit start, and the riff plays until the clock runs out. Pause the timer and the music pauses with it.">
+<meta property="og:image" content="https://finalcountdown.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Final Countdown Timer — a neon countdown clock reading 00:30 over a synthwave grid.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Final Countdown Timer — the timer that plays the song">
+<meta name="twitter:description" content="Set a timer, hit start, and the riff plays until the clock runs out. Pause the timer and the music pauses with it.">
+<meta name="twitter:image" content="https://finalcountdown.app/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": "https://finalcountdown.app/#app",
+      "name": "Final Countdown Timer",
+      "url": "https://finalcountdown.app/",
+      "description": "A free online countdown timer that plays The Final Countdown while it runs, and stops the music the moment the timer stops.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any modern web browser",
+      "browserRequirements": "Requires JavaScript and Web Audio support",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "featureList": [
+        "Countdown timer with music that plays only while the clock runs",
+        "Presets from 30 seconds to 25 minutes",
+        "Built-in synth riff that works offline",
+        "Play any YouTube video as the timer soundtrack",
+        "Use your own audio file",
+        "Pause and resume without losing your place",
+        "Share a link that reopens the timer at the same duration"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://finalcountdown.app/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does this countdown timer play The Final Countdown?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. By default the timer plays the Europe track through an embedded YouTube player, and it starts and stops with the clock. If YouTube is blocked or unavailable, switch to Synth mode for a built-in version of the riff that is generated in your browser."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the timer free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. It is completely free, there is no account to create, nothing to install, and no ads. Open the page and press Start."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does the music stop when I pause the timer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The audio is tied to the clock. Pausing the countdown pauses the music, resuming picks it back up, and resetting stops it and returns the track to the start."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use my own music instead?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, in two ways. Paste any YouTube URL to swap the video, or choose File to play an audio file from your own device. Files you pick stay in your browser and are never uploaded."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it work without an internet connection?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The Synth source does. It generates the riff locally with the Web Audio API, so it keeps working when YouTube is blocked, such as on a school or office network. The YouTube source needs a connection."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it work on phones and tablets?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The layout adapts to phones, tablets and desktops. On mobile browsers you may need to tap the page once before audio is allowed to play, which is a restriction browsers apply to every site."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I share a timer with someone else?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Press Share this timer and you get a link with the duration built into it, so whoever opens it lands on the same countdown ready to start. On phones this opens your normal share sheet; on desktop the link is copied to your clipboard."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the 25 minute preset for?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It is a Pomodoro work interval. The 25 minute preset gives you one focus session, and the shorter presets cover breaks, workout intervals and classroom activities."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 <style>
   :root {
     --cyan: #22e6ff;
@@ -28,20 +136,36 @@
       radial-gradient(ellipse at 50% 120%, #4a0f6b 0%, transparent 60%),
       radial-gradient(ellipse at 50% -20%, #0b2a5e 0%, transparent 55%),
       var(--bg);
+    background-attachment: fixed;
     color: #eaf6ff;
     font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+  }
+  /* The timer owns the first screen; the reference content sits below the fold.
+     min-height, not height: content taller than the viewport would otherwise
+     get its top clipped off-screen unreachably. */
+  .hero {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px;
     padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
              max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
-    overflow-x: hidden;
   }
-  /* horizon grid */
-  body::after {
+  /* Horizon grid. Anchored to the hero rather than the viewport so it scrolls
+     away with the timer instead of sitting on top of the text below. */
+  /* clip, not hidden: the grid overhangs both edges and would otherwise widen
+     the page, but hiding overflow outright could clip tall content vertically. */
+  .hero { position: relative; overflow-x: clip; }
+  .hero::after {
     content: "";
-    position: fixed;
+    position: absolute;
     left: -50%; right: -50%; bottom: 0; height: 45vh;
     background-image:
       repeating-linear-gradient(to right, rgba(255,47,208,.35) 0 1px, transparent 1px 80px),
@@ -124,6 +248,15 @@
   button.primary { border-color: var(--magenta); background: linear-gradient(180deg, rgba(255,47,208,.28), rgba(255,47,208,.06)); color: #ffe9fa; }
   button.primary:hover:not(:disabled) { box-shadow: 0 0 22px rgba(255,47,208,.5); background: rgba(255,47,208,.35); }
   button.chip { padding: 7px 12px; font-size: .7rem; border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.05); }
+  /* Yellow is the one brand colour no other control uses, so Share reads as
+     its own thing without competing with Start for attention. */
+  button.share {
+    border-color: rgba(255,210,63,.45);
+    background: linear-gradient(180deg, rgba(255,210,63,.15), rgba(255,210,63,.03));
+    color: #ffeaa8;
+    min-width: 148px;
+  }
+  button.share:hover:not(:disabled) { box-shadow: 0 0 20px rgba(255,210,63,.4); background: rgba(255,210,63,.22); }
 
   .panel {
     margin-top: 30px;
@@ -157,6 +290,70 @@
   input[type="file"] { font: inherit; font-size: .68rem; color: rgba(234,246,255,.55); max-width: 230px; }
   .note { margin-top: 14px; line-height: 1.7; text-transform: none; letter-spacing: .02em; font-size: .68rem; }
 
+  /* ------------------------------------------------------------------ *
+   * Below-the-fold reference content. Long-form prose in the monospace
+   * face is rough to read, so only the headings keep the arcade look.
+   * ------------------------------------------------------------------ */
+  .prose {
+    position: relative;
+    z-index: 1;
+    width: min(720px, 100%);
+    padding: 0 max(24px, env(safe-area-inset-left)) 72px max(24px, env(safe-area-inset-right));
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: .95rem;
+    line-height: 1.75;
+    color: rgba(234,246,255,.76);
+  }
+  .prose section { padding: 36px 0 4px; border-top: 1px solid rgba(255,255,255,.08); }
+  .prose h2, .prose h3 {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+  .prose h2 {
+    margin: 0 0 14px;
+    font-size: 1rem;
+    letter-spacing: .22em;
+    color: var(--cyan);
+    text-shadow: 0 0 16px rgba(34,230,255,.45);
+  }
+  .prose h3 {
+    margin: 26px 0 6px;
+    font-size: .8rem;
+    letter-spacing: .14em;
+    color: rgba(255,47,208,.92);
+  }
+  .prose p { margin: 0 0 14px; }
+  .prose ul, .prose ol { margin: 0 0 14px; padding-left: 20px; }
+  .prose li { margin-bottom: 8px; }
+  .prose li::marker { color: rgba(255,47,208,.7); }
+  .prose strong { color: #eaf6ff; font-weight: 600; }
+  .prose code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: .86em;
+    color: var(--yellow);
+    background: rgba(255,210,63,.08);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+  .prose a { color: var(--cyan); text-underline-offset: 3px; text-decoration-color: rgba(34,230,255,.45); }
+  .prose a:hover { color: var(--magenta); text-decoration-color: rgba(255,47,208,.6); }
+  .prose kbd {
+    font: inherit; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .8em;
+    border: 1px solid rgba(34,230,255,.4); border-radius: 5px; padding: 1px 6px;
+    background: rgba(34,230,255,.08); color: #dffbff;
+  }
+  .site-footer {
+    width: min(720px, 100%);
+    padding: 0 24px 48px;
+    font-size: .68rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: rgba(234,246,255,.4);
+    text-align: center;
+  }
+  .site-footer a { color: rgba(34,230,255,.75); }
+
   /* Touch devices: 16px inputs so iOS doesn't zoom the page on focus,
      and roomier tap targets on the small controls. */
   @media (hover: none) and (pointer: coarse) {
@@ -168,7 +365,8 @@
 
   /* Narrow phones */
   @media (max-width: 480px) {
-    body { padding: 16px 12px; }
+    .hero { padding: 16px 12px; }
+    .prose { padding-left: 18px; padding-right: 18px; font-size: .92rem; }
     h1 { letter-spacing: .2em; }
     .sub { margin-bottom: 20px; }
     #input { width: 100%; }
@@ -191,8 +389,9 @@
 </style>
 </head>
 <body>
+<div class="hero">
 <main>
-  <h1>The Final Countdown</h1>
+  <h1>Final Countdown Timer</h1>
   <p class="sub">Music plays only while the clock runs</p>
 
   <div id="display">00:00</div>
@@ -210,6 +409,10 @@
     <button class="chip" data-preset="300">5m</button>
     <button class="chip" data-preset="600">10m</button>
     <button class="chip" data-preset="1500">25m</button>
+  </div>
+
+  <div class="row">
+    <button id="share" class="chip share" aria-label="Share a link to this timer">Share this timer</button>
   </div>
 
   <div class="panel">
@@ -237,6 +440,157 @@
     <p class="note" id="source-note"></p>
   </div>
 </main>
+</div>
+
+<article class="prose">
+  <section>
+    <h2>A countdown timer with a soundtrack</h2>
+    <p>
+      Most online timers end with a beep. This one plays <strong>The Final Countdown</strong> for
+      the whole run instead, and the music is wired directly to the clock: it starts when you press
+      Start, pauses when you pause, and cuts out the instant the timer is reset. When the clock
+      reaches zero you get a short fanfare.
+    </p>
+    <p>
+      It runs entirely in your browser. There is nothing to install, no account to create, no ads,
+      and no tracking. It works on phones, tablets and desktops, and every setting stays on your own
+      device.
+    </p>
+  </section>
+
+  <section>
+    <h2>How to use the timer</h2>
+    <ol>
+      <li>
+        Type a duration into the box and press <kbd>Enter</kbd> or hit <strong>Start</strong>. It
+        understands most ways of writing a time: <code>90</code> for ninety seconds,
+        <code>5:00</code> for five minutes, <code>1:02:03</code> for just over an hour, and shorthand
+        like <code>5m</code> or <code>1h30m</code>.
+      </li>
+      <li>Or skip the typing and tap one of the presets underneath.</li>
+      <li>
+        <strong>Start</strong> becomes <strong>Pause</strong> while the clock runs, then
+        <strong>Resume</strong>. Pausing holds both the time and the music exactly where they are.
+      </li>
+      <li><strong>Reset</strong> stops everything and puts the clock back to your chosen duration.</li>
+    </ol>
+    <p>
+      The last ten seconds turn yellow and pulse so you get a warning without having to watch the
+      screen. The remaining time is also mirrored into the browser tab title, so you can leave the
+      timer running in a background tab and still keep an eye on it.
+    </p>
+  </section>
+
+  <section>
+    <h2>Presets</h2>
+    <p>The six preset buttons cover the durations people reach for most often:</p>
+    <ul>
+      <li><strong>30 seconds and 1 minute</strong> — plank holds, sprint intervals, speed rounds in a game, brushing your teeth.</li>
+      <li><strong>3 minutes</strong> — steeping tea, a boxing round, a lightning talk.</li>
+      <li><strong>5 and 10 minutes</strong> — classroom activities, meeting segments, a warm-up, a short break.</li>
+      <li><strong>25 minutes</strong> — one Pomodoro focus session.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Three ways to play the music</h2>
+    <h3>YouTube</h3>
+    <p>
+      The default. It plays the track through an embedded, privacy-friendly YouTube player. You can
+      paste any other YouTube URL to swap in a different song, and a <code>t=</code> timestamp in the
+      URL is honoured, so you can start a video part-way through.
+    </p>
+    <h3>Synth</h3>
+    <p>
+      A version of the riff generated live in your browser with the Web Audio API — bassline, drums,
+      slapback echo and all. Because nothing is streamed, this option keeps working when YouTube is
+      blocked or unavailable, which is often the case on school and office networks. It also starts
+      instantly.
+    </p>
+    <h3>Your own file</h3>
+    <p>
+      Pick any audio file from your device and it becomes the timer's soundtrack. The file is played
+      locally and is never uploaded anywhere.
+    </p>
+  </section>
+
+  <section>
+    <h2>Share a timer</h2>
+    <p>
+      The <strong>Share this timer</strong> button hands you a link with the duration already in it,
+      as a <code>?t=</code> parameter — <code>?t=25m</code> for a Pomodoro,
+      <code>?t=3m</code> for a boxing round. Open that link and the timer is set and waiting, so you
+      can drop a ready-made countdown into a group chat, a lesson plan or a workout post.
+    </p>
+    <p>
+      On phones the button opens your usual share sheet. On desktop it copies the link straight to
+      your clipboard.
+    </p>
+  </section>
+
+  <section id="faq">
+    <h2>Frequently asked questions</h2>
+
+    <h3>Does this countdown timer play The Final Countdown?</h3>
+    <p>
+      Yes. By default the timer plays the Europe track through an embedded YouTube player, and it
+      starts and stops with the clock. If YouTube is blocked or unavailable, switch to Synth mode for
+      a built-in version of the riff that is generated in your browser.
+    </p>
+
+    <h3>Is the timer free?</h3>
+    <p>
+      Yes. It is completely free, there is no account to create, nothing to install, and no ads. Open
+      the page and press Start.
+    </p>
+
+    <h3>Does the music stop when I pause the timer?</h3>
+    <p>
+      Yes. The audio is tied to the clock. Pausing the countdown pauses the music, resuming picks it
+      back up, and resetting stops it and returns the track to the start.
+    </p>
+
+    <h3>Can I use my own music instead?</h3>
+    <p>
+      Yes, in two ways. Paste any YouTube URL to swap the video, or choose File to play an audio file
+      from your own device. Files you pick stay in your browser and are never uploaded.
+    </p>
+
+    <h3>Does it work without an internet connection?</h3>
+    <p>
+      The Synth source does. It generates the riff locally with the Web Audio API, so it keeps
+      working when YouTube is blocked, such as on a school or office network. The YouTube source
+      needs a connection.
+    </p>
+
+    <h3>Can I share a timer with someone else?</h3>
+    <p>
+      Yes. Press <strong>Share this timer</strong> and you get a link with the duration built into
+      it, so whoever opens it lands on the same countdown ready to start. On phones this opens your
+      normal share sheet; on desktop the link is copied to your clipboard.
+    </p>
+
+    <h3>Does it work on phones and tablets?</h3>
+    <p>
+      Yes. The layout adapts to phones, tablets and desktops. On mobile browsers you may need to tap
+      the page once before audio is allowed to play, which is a restriction browsers apply to every
+      site.
+    </p>
+
+    <h3>What is the 25 minute preset for?</h3>
+    <p>
+      It is a Pomodoro work interval. The 25 minute preset gives you one focus session, and the
+      shorter presets cover breaks, workout intervals and classroom activities.
+    </p>
+  </section>
+</article>
+
+<footer class="site-footer">
+  <p>
+    Free to use, no sign-up. Built with the Web Audio API &middot;
+    <a href="https://github.com/garrelj1/final-countdown">Source on GitHub</a>
+  </p>
+</footer>
 
 <script>
 /* ------------------------------------------------------------------ *
@@ -602,6 +956,10 @@ function fanfare() {
 /* ------------------------------------------------------------------ *
  * Timer
  * ------------------------------------------------------------------ */
+/* Captured from the markup so the idle title and the <title> tag can never
+   drift apart — render() would otherwise clobber the one search engines index. */
+const DEFAULT_TITLE = document.title;
+
 const display = document.getElementById('display');
 const input = document.getElementById('input');
 const startBtn = document.getElementById('start');
@@ -625,8 +983,8 @@ function render() {
   display.classList.toggle('warn', state === 'running' && remaining <= 10);
   display.classList.toggle('done', state === 'done');
   document.title = state === 'running'
-    ? `${format(remaining)} — Final Countdown`
-    : 'The Final Countdown';
+    ? `${format(remaining)} — Final Countdown Timer`
+    : DEFAULT_TITLE;
 }
 
 function tick() {
@@ -781,6 +1139,69 @@ fileInput.addEventListener('change', () => {
 
 // Never let audio outlive a hidden tab while paused mid-song.
 window.addEventListener('pagehide', musicStop);
+
+/* ------------------------------------------------------------------ *
+ * Sharing. The link carries the current duration as ?t=, so whoever
+ * opens it lands on the same timer rather than the default one.
+ * ------------------------------------------------------------------ */
+const shareBtn = document.getElementById('share');
+const SHARE_LABEL = shareBtn.textContent;
+let shareRevert = null;
+
+/* Seconds -> the shorthand parseDuration already understands ("25m"). */
+function compactDuration(secs) {
+  const h = Math.floor(secs / 3600), m = Math.floor(secs / 60) % 60, s = secs % 60;
+  return `${h ? h + 'h' : ''}${m ? m + 'm' : ''}${s ? s + 's' : ''}` || '0s';
+}
+
+function shareUrl() {
+  const url = new URL(location.href);
+  url.search = '';
+  url.hash = '';
+  const secs = parseDuration(input.value);
+  if (secs > 0) url.searchParams.set('t', compactDuration(secs));
+  return url.toString();
+}
+
+function shareFeedback(msg) {
+  shareBtn.textContent = msg;
+  clearTimeout(shareRevert);
+  shareRevert = setTimeout(() => { shareBtn.textContent = SHARE_LABEL; }, 2200);
+}
+
+function copyLink(url) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url)
+      .then(() => shareFeedback('Link copied'))
+      .catch(() => window.prompt('Copy this link:', url));
+  } else {
+    window.prompt('Copy this link:', url);
+  }
+}
+
+shareBtn.addEventListener('click', async () => {
+  const url = shareUrl();
+  const secs = parseDuration(input.value) || 0;
+  const text = secs > 0
+    ? `A ${format(secs)} countdown timer that plays The Final Countdown.`
+    : 'A countdown timer that plays The Final Countdown.';
+
+  // The native sheet is the good path on mobile; desktop mostly lacks it.
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'Final Countdown Timer', text, url });
+      return;
+    } catch (err) {
+      // Dismissing the sheet is a normal outcome, not a failure to fall back on.
+      if (err && err.name === 'AbortError') return;
+    }
+  }
+  copyLink(url);
+});
+
+// Honour ?t= from a shared link before the first render.
+const sharedTime = parseDuration(new URLSearchParams(location.search).get('t') || '');
+if (sharedTime > 0) input.value = format(sharedTime);
 
 remaining = parseDuration(input.value) || 0;
 sourceNote.textContent = NOTES[source];
