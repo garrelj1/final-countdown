@@ -149,8 +149,10 @@
      get its top clipped off-screen unreachably. */
   .hero {
     width: 100%;
+    /* a little short of the viewport, so the collapsed "how it works" line
+       peeks above the fold instead of being invisible until you scroll */
     min-height: 100vh;
-    min-height: 100svh;
+    min-height: calc(100svh - 54px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -291,9 +293,40 @@
   .note { margin-top: 14px; line-height: 1.7; text-transform: none; letter-spacing: .02em; font-size: .68rem; }
 
   /* ------------------------------------------------------------------ *
-   * Below-the-fold reference content. Long-form prose in the monospace
-   * face is rough to read, so only the headings keep the arcade look.
+   * Below-the-fold reference content. Collapsed by default so the landing
+   * page stays a single screen — <details> keeps it in the markup, which
+   * is what search engines read, without putting it in anyone's way.
+   * Long-form prose in the monospace face is rough to read, so only the
+   * headings keep the arcade look.
    * ------------------------------------------------------------------ */
+  .more { width: min(720px, 100%); }
+  .more > summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 24px 20px;
+    font-size: .7rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: rgba(234,246,255,.5);
+    transition: color .15s;
+  }
+  .more > summary::-webkit-details-marker { display: none; }
+  .more > summary:hover { color: var(--cyan); }
+  .more > summary:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 6px; }
+  .more > summary::after {
+    content: "";
+    width: 7px; height: 7px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform .18s;
+  }
+  .more[open] > summary::after { transform: translateY(1px) rotate(-135deg); }
+
   .prose {
     position: relative;
     z-index: 1;
@@ -442,6 +475,8 @@
 </main>
 </div>
 
+<details class="more">
+<summary>How it works &amp; FAQ</summary>
 <article class="prose">
   <section>
     <h2>A countdown timer with a soundtrack</h2>
@@ -584,6 +619,7 @@
     </p>
   </section>
 </article>
+</details>
 
 <footer class="site-footer">
   <p>
@@ -1198,6 +1234,21 @@ shareBtn.addEventListener('click', async () => {
   }
   copyLink(url);
 });
+
+/* A link to #faq has to work even though that section starts collapsed.
+   Chrome opens <details> for a fragment on its own; the rest do not. */
+function revealHashTarget() {
+  const id = decodeURIComponent(location.hash.slice(1));
+  if (!id) return;
+  const el = document.getElementById(id);
+  const box = el && el.closest('details');
+  if (box && !box.open) {
+    box.open = true;
+    el.scrollIntoView();
+  }
+}
+window.addEventListener('hashchange', revealHashTarget);
+revealHashTarget();
 
 // Honour ?t= from a shared link before the first render.
 const sharedTime = parseDuration(new URLSearchParams(location.search).get('t') || '');
