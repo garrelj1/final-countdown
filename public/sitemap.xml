@@ -2,8 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://finalcountdown.app/</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-11-13</lastmod>
+  </url>
+  <url>
+    <loc>https://finalcountdown.app/how-it-works</loc>
+    <lastmod>2026-11-13</lastmod>
+  </url>
+  <url>
+    <loc>https://finalcountdown.app/faq</loc>
+    <lastmod>2026-11-13</lastmod>
+  </url>
+  <url>
+    <loc>https://finalcountdown.app/privacy</loc>
+    <lastmod>2026-11-13</lastmod>
   </url>
 </urlset>

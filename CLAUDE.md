@@ -1,5 +1,20 @@
 # Final Countdown Timer
 
+## Site structure
+
+- `public/index.html` is the timer. It must fit one screen (clock, controls,
+  YouTube player, Share) at 1280×720 and up and on a 390×664 phone viewport;
+  only the footer sits below the fold. The YouTube player must stay visible
+  and at least 200×200 px (YouTube's embed rules).
+- `how-it-works.html`, `faq.html` and `privacy.html` hold the reference
+  content, served at `/how-it-works`, `/faq` and `/privacy`. Every page shares
+  `/site.css` and `/analytics.js` and repeats the same footer nav.
+- The FAQ's `FAQPage` structured data must say exactly what the visible
+  answers say; edit both together.
+- `/privacy` describes what the site collects. Change it in the same commit as
+  any change to analytics events, the counters, or third-party requests.
+- New pages go in `sitemap.xml` and `llms.txt`.
+
 ## This repository is public
 
 Everything here is world-readable at github.com/garrelj1/final-countdown:

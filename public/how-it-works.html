@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How the Final Countdown Timer Works: Presets, Music and Sharing</title>
+<meta name="description" content="How to use the Final Countdown Timer: type any duration or pick a preset, play the song from YouTube, a built-in synth or your own file, and share a link that opens the same timer.">
+<meta name="theme-color" content="#07020f">
+<link rel="canonical" href="https://finalcountdown.app/how-it-works">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Final Countdown Timer">
+<meta property="og:url" content="https://finalcountdown.app/how-it-works">
+<meta property="og:title" content="How the Final Countdown Timer works">
+<meta property="og:description" content="Type a duration or pick a preset, choose YouTube, synth or your own file for the music, and share a link that opens the same timer.">
+<meta property="og:image" content="https://finalcountdown.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Final Countdown Timer: a neon countdown clock reading 00:30 over a synthwave grid.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How the Final Countdown Timer works">
+<meta name="twitter:description" content="Type a duration or pick a preset, choose YouTube, synth or your own file for the music, and share a link that opens the same timer.">
+<meta name="twitter:image" content="https://finalcountdown.app/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://finalcountdown.app/how-it-works#page",
+      "url": "https://finalcountdown.app/how-it-works",
+      "name": "How the Final Countdown Timer works",
+      "description": "How to use the Final Countdown Timer: durations, presets, the three music sources, and share links.",
+      "isPartOf": { "@id": "https://finalcountdown.app/#website" },
+      "about": { "@id": "https://finalcountdown.app/#app" },
+      "dateModified": "2026-11-13",
+      "breadcrumb": { "@id": "https://finalcountdown.app/how-it-works#breadcrumb" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://finalcountdown.app/how-it-works#breadcrumb",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Timer", "item": "https://finalcountdown.app/" },
+        { "@type": "ListItem", "position": 2, "name": "How it works", "item": "https://finalcountdown.app/how-it-works" }
+      ]
+    }
+  ]
+}
+</script>
+<link rel="stylesheet" href="/site.css">
+<script src="/analytics.js"></script>
+</head>
+<body>
+
+<header class="page-header">
+  <a class="brand" href="/">Final Countdown Timer</a>
+</header>
+
+<main class="prose">
+  <h1>How the Final Countdown Timer works</h1>
+  <p class="lede">
+    The Final Countdown Timer is a free online countdown timer that plays <strong>The Final
+    Countdown</strong> while the clock runs. The music is wired to the clock: it starts when you
+    press Start, pauses when you pause, and stops the instant you reset. When the clock reaches zero
+    you get a short fanfare.
+  </p>
+  <p>
+    There is nothing to install, no account to create and no ads. It works on phones, tablets and
+    desktops. The site keeps a public count of visits and shares and uses Google Analytics for usage
+    statistics; the <a href="/privacy">privacy page</a> lists exactly what is collected.
+  </p>
+  <p><a class="cta" href="/">Open the timer</a></p>
+
+  <section>
+    <h2>How to use the timer</h2>
+    <ol>
+      <li>
+        Type a duration into the box and press <kbd>Enter</kbd> or hit <strong>Start</strong>. It
+        understands most ways of writing a time: <code>90</code> for ninety seconds,
+        <code>5:00</code> for five minutes, <code>1:02:03</code> for just over an hour, and shorthand
+        like <code>5m</code> or <code>1h30m</code>.
+      </li>
+      <li>Or skip the typing and tap one of the presets underneath.</li>
+      <li>
+        <strong>Start</strong> becomes <strong>Pause</strong> while the clock runs, then
+        <strong>Resume</strong>. Pausing holds both the time and the music exactly where they are.
+      </li>
+      <li><strong>Reset</strong> stops everything and puts the clock back to your chosen duration.</li>
+    </ol>
+    <p>
+      The last ten seconds turn yellow and pulse, so you get a warning without watching the screen.
+      The remaining time is also shown in the browser tab title, so you can keep an eye on a timer
+      running in a background tab.
+    </p>
+  </section>
+
+  <section>
+    <h2>Presets</h2>
+    <p>The six preset buttons cover the durations people reach for most often:</p>
+    <ul>
+      <li><strong>30 seconds and 1 minute:</strong> plank holds, sprint intervals, speed rounds in a game, brushing your teeth.</li>
+      <li><strong>3 minutes:</strong> steeping tea, a boxing round, a lightning talk.</li>
+      <li><strong>5 and 10 minutes:</strong> classroom activities, meeting segments, a warm-up, a short break.</li>
+      <li><strong>25 minutes:</strong> one Pomodoro focus session.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Three ways to play the music</h2>
+    <h3>YouTube</h3>
+    <p>
+      The default. It plays the track through YouTube's embedded player in privacy-enhanced mode,
+      and the player stays visible while it plays. Paste any other YouTube URL to swap in a
+      different song; a <code>t=</code> timestamp in the URL is honored, so you can start a video
+      part-way through.
+    </p>
+    <h3>Synth</h3>
+    <p>
+      A version of the riff generated live in your browser with the Web Audio API, with bassline,
+      drums and slapback echo. Nothing is streamed, so it keeps working when YouTube is blocked or
+      unavailable, which is common on school and office networks. It also starts instantly.
+    </p>
+    <h3>Your own file</h3>
+    <p>
+      Pick any audio file from your device and it becomes the timer's soundtrack. The file plays
+      locally and is never uploaded.
+    </p>
+  </section>
+
+  <section>
+    <h2>Share a timer</h2>
+    <p>
+      The <strong>Share this timer</strong> button gives you a link with the duration built in as a
+      <code>?t=</code> parameter: <code>?t=25m</code> for a Pomodoro, <code>?t=3m</code> for a
+      boxing round. Whoever opens the link lands on the same timer, set and ready to start, so you
+      can drop a ready-made countdown into a group chat, a lesson plan or a workout post.
+    </p>
+    <p>
+      On phones the button opens your usual share sheet. On desktop it copies the link to your
+      clipboard. The count under the button shows how many times timers have been shared.
+    </p>
+    <p><a class="cta" href="/">Start a countdown</a></p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <nav class="site-nav" aria-label="Site">
+    <a href="/">Timer</a>
+    <a href="/how-it-works" aria-current="page">How it works</a>
+    <a href="/faq">FAQ</a>
+    <a href="/privacy">Privacy</a>
+    <a href="https://github.com/garrelj1/final-countdown">Source on GitHub</a>
+  </nav>
+  <p>Free to use, no sign-up, no ads.</p>
+</footer>
+
+</body>
+</html>
