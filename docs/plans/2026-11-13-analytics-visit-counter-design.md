@@ -61,9 +61,9 @@ until it happens.
 
 ## Setup outside the repo
 
-1. `npx wrangler d1 create final-countdown`, then put the returned id in
+1. Done: `final-countdown` D1 database created and its id is in
    `wrangler.toml`.
-2. `npx wrangler d1 migrations apply final-countdown --remote`.
+2. Done: migration applied with `npx wrangler d1 migrations apply final-countdown --remote`.
 3. Set `GA_MEASUREMENT_ID` in `public/index.html`.
 
 ## Verification

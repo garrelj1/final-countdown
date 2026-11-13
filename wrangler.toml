@@ -5,5 +5,5 @@ pages_build_output_dir = "public"
 [[d1_databases]]
 binding = "DB"
 database_name = "final-countdown"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "26fda1e9-310d-46fc-9a6e-855cc0894655"
 migrations_dir = "migrations"
