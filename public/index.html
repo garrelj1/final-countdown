@@ -190,7 +190,7 @@
     text-shadow: 0 0 12px rgba(34,230,255,.8), 0 0 42px rgba(34,230,255,.35);
   }
   .sub {
-    margin: 0 0 28px;
+    margin: 0;
     font-size: .72rem;
     letter-spacing: .28em;
     text-transform: uppercase;
@@ -257,6 +257,18 @@
     min-width: 148px;
   }
   button.share:hover:not(:disabled) { box-shadow: 0 0 20px rgba(255,210,63,.4); background: rgba(255,210,63,.22); }
+  /* Totals arrive after first paint, so each line reserves its height up
+     front; filling it in must not push the clock or controls down. */
+  .tally {
+    min-height: 1.5em;
+    line-height: 1.5;
+    font-size: .68rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+  .visit-tally { margin: 6px 0 22px; color: rgba(223,251,255,.5); }
+  .share-tally { margin: 8px 0 0; color: rgba(255,234,168,.6); }
 
   .panel {
     margin-top: 30px;
@@ -368,7 +380,7 @@
     .hero { padding: 16px 12px; }
     .prose { padding-left: 18px; padding-right: 18px; font-size: .92rem; }
     h1 { letter-spacing: .2em; }
-    .sub { margin-bottom: 20px; }
+    .visit-tally { margin-bottom: 14px; }
     #input { width: 100%; }
     #start, #reset { flex: 1; }
     .panel { margin-top: 22px; }
@@ -377,7 +389,7 @@
   /* Short windows: landscape phones and small laptop viewports */
   @media (max-height: 700px) {
     #display { font-size: clamp(2.4rem, 13vh, 6rem); margin-bottom: 12px; }
-    .sub { margin-bottom: 16px; }
+    .visit-tally { margin-bottom: 10px; }
     .panel { margin-top: 18px; padding-top: 12px; }
     #yt-wrap { width: min(320px, 100%); }
   }
@@ -387,12 +399,39 @@
     button { transition: none; }
   }
 </style>
+<script>
+const GA_MEASUREMENT_ID = 'G-XDC8NYV5WF';
+
+// EEA, UK and Switzerland need consent before analytics cookies; with no
+// banner, visitors there stay on cookieless pings. Google resolves the region.
+const CONSENT_REQUIRED_REGIONS = [
+  'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU',
+  'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES',
+  'SE', 'IS', 'LI', 'NO', 'GB', 'CH',
+];
+
+if (GA_MEASUREMENT_ID) {
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function gtag() { dataLayer.push(arguments); };
+  const NO_ADS = { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' };
+  gtag('consent', 'default', { ...NO_ADS, analytics_storage: 'granted' });
+  gtag('consent', 'default', { ...NO_ADS, analytics_storage: 'denied', region: CONSENT_REQUIRED_REGIONS });
+  gtag('js', new Date());
+  gtag('config', GA_MEASUREMENT_ID);
+
+  const gaLibrary = document.createElement('script');
+  gaLibrary.async = true;
+  gaLibrary.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`;
+  document.head.appendChild(gaLibrary);
+}
+</script>
 </head>
 <body>
 <div class="hero">
 <main>
   <h1>Final Countdown Timer</h1>
   <p class="sub">Music plays only while the clock runs</p>
+  <p id="visits" class="tally visit-tally"></p>
 
   <div id="display">00:00</div>
 
@@ -414,6 +453,7 @@
   <div class="row">
     <button id="share" class="chip share" aria-label="Share a link to this timer">Share this timer</button>
   </div>
+  <p id="shares" class="tally share-tally" aria-live="polite"></p>
 
   <div class="panel">
     <div class="row">
@@ -590,9 +630,18 @@
     Free to use, no sign-up. Built with the Web Audio API &middot;
     <a href="https://github.com/garrelj1/final-countdown">Source on GitHub</a>
   </p>
+  <p>
+    Uses Google Analytics to count visits and shares, without cookies for visitors in the
+    EU, UK and Switzerland &middot;
+    <a href="https://policies.google.com/technologies/partner-sites">How Google uses this data</a>
+  </p>
 </footer>
 
 <script>
+function track(eventName, params) {
+  if (typeof window.gtag === 'function') window.gtag('event', eventName, params);
+}
+
 /* ------------------------------------------------------------------ *
  * Time parsing / formatting
  * ------------------------------------------------------------------ */
@@ -1013,6 +1062,7 @@ function start() {
   rafId = requestAnimationFrame(tick);
   syncButtons();
   render();
+  track('timer_start', { duration_seconds: secs, source });
 }
 
 function pause() {
@@ -1022,6 +1072,7 @@ function pause() {
   musicPause();
   syncButtons();
   render();
+  track('timer_pause');
 }
 
 function resume() {
@@ -1040,6 +1091,7 @@ function finish() {
   fanfare();
   syncButtons();
   render();
+  track('timer_finish', { duration_seconds: parseDuration(input.value) || 0 });
 }
 
 function reset() {
@@ -1049,6 +1101,7 @@ function reset() {
   musicStop();
   syncButtons();
   render();
+  track('timer_reset');
 }
 
 function syncButtons() {
@@ -1109,6 +1162,7 @@ function setSource(next) {
   ytStatus('');
   if (next === 'youtube') ensurePlayer().then(primePlayer).catch(() => {});
   if (state === 'running') musicStart();
+  track('music_source', { source: next });
 }
 
 document.querySelectorAll('[data-source]').forEach(btn =>
@@ -1169,13 +1223,25 @@ function shareFeedback(msg) {
   shareRevert = setTimeout(() => { shareBtn.textContent = SHARE_LABEL; }, 2200);
 }
 
+function recordShare(method) {
+  track('share', { method, content_type: 'timer', duration_seconds: parseDuration(input.value) || 0 });
+  postTally('/api/shares')
+    .then(({ shares }) => showTotal(sharesLabel, shares, sharesText))
+    .catch(() => {});
+}
+
+function promptLink(url) {
+  window.prompt('Copy this link:', url);
+  recordShare('prompt');
+}
+
 function copyLink(url) {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url)
-      .then(() => shareFeedback('Link copied'))
-      .catch(() => window.prompt('Copy this link:', url));
+      .then(() => { shareFeedback('Link copied'); recordShare('clipboard'); })
+      .catch(() => promptLink(url));
   } else {
-    window.prompt('Copy this link:', url);
+    promptLink(url);
   }
 }
 
@@ -1190,10 +1256,14 @@ shareBtn.addEventListener('click', async () => {
   if (navigator.share) {
     try {
       await navigator.share({ title: 'Final Countdown Timer', text, url });
+      recordShare('native');
       return;
     } catch (err) {
       // Dismissing the sheet is a normal outcome, not a failure to fall back on.
-      if (err && err.name === 'AbortError') return;
+      if (err && err.name === 'AbortError') {
+        track('share_dismissed');
+        return;
+      }
     }
   }
   copyLink(url);
@@ -1201,7 +1271,46 @@ shareBtn.addEventListener('click', async () => {
 
 // Honour ?t= from a shared link before the first render.
 const sharedTime = parseDuration(new URLSearchParams(location.search).get('t') || '');
-if (sharedTime > 0) input.value = format(sharedTime);
+if (sharedTime > 0) {
+  input.value = format(sharedTime);
+  track('shared_link_open', { duration_seconds: sharedTime });
+}
+
+/* ------------------------------------------------------------------ *
+ * Public tallies: visits under the title, shares under the Share
+ * button. A line stays blank unless the server returns a real total,
+ * so a failed request never shows a wrong number.
+ * ------------------------------------------------------------------ */
+const visitsLabel = document.getElementById('visits');
+const sharesLabel = document.getElementById('shares');
+const countFormat = new Intl.NumberFormat('en-US');
+
+function visitsText(n) {
+  return `${countFormat.format(n)} ${n === 1 ? 'visit' : 'visits'}`;
+}
+
+function sharesText(n) {
+  if (n === 0) return 'Be the first';
+  if (n === 1) return 'Shared once';
+  if (n === 2) return 'Shared twice';
+  return `Shared ${countFormat.format(n)} times`;
+}
+
+function showTotal(label, total, text) {
+  if (Number.isSafeInteger(total) && total >= 0) label.textContent = text(total);
+}
+
+function postTally(path) {
+  return fetch(path, { method: 'POST' })
+    .then(res => res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`)));
+}
+
+postTally('/api/visits')
+  .then(({ visits, shares }) => {
+    showTotal(visitsLabel, visits, visitsText);
+    showTotal(sharesLabel, shares, sharesText);
+  })
+  .catch(() => {});
 
 remaining = parseDuration(input.value) || 0;
 sourceNote.textContent = NOTES[source];

@@ -1,3 +1,9 @@
 name = "final-countdown"
 compatibility_date = "2026-08-09"
 pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "final-countdown"
+database_id = "26fda1e9-310d-46fc-9a6e-855cc0894655"
+migrations_dir = "migrations"
