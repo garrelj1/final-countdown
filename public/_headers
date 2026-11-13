@@ -14,3 +14,15 @@
 
 /sitemap.xml
   Cache-Control: public, max-age=3600
+
+/site.css
+  Cache-Control: public, max-age=3600
+
+/analytics.js
+  Cache-Control: public, max-age=3600
+
+/llms.txt
+  Cache-Control: public, max-age=3600
+
+/scene.svg
+  Cache-Control: public, max-age=86400

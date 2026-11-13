@@ -55,7 +55,7 @@ zero.
 | Fact | D1 table `site_counters`, one row per counter name |
 | Mechanism | Atomic upsert in `lib/counters/d1-counter-store.js` |
 | Core entity | `CounterTotal` in `lib/counters/counter-total.js` (non-negative integer) |
-| Inbound adapters | `POST /api/visits` returns `{ "visits": n, "shares": n }`; `POST /api/shares` returns `{ "shares": n }` |
+| Inbound adapters | `POST /api/visits` returns `{ "rank": n, "shares": n }` (see the daily dedupe in the single-screen design doc); `POST /api/shares` returns `{ "shares": n }` |
 | Presentation | Page formats the numbers and words the share caption |
 | View state | Each line reserves its height and stays blank until a valid total arrives |
 

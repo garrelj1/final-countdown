@@ -1,0 +1,19 @@
+# Final Countdown Timer
+
+> A free online countdown timer at https://finalcountdown.app that plays "The Final Countdown" while the clock runs. The music starts with the timer, pauses when it pauses, and stops when it resets. No sign-up, no install, no ads; works in any modern browser on phones, tablets and desktops.
+
+- Durations: type any time (`90`, `5:00`, `1:02:03`, `5m`, `1h30m`) or use a preset: 30 seconds, 1, 3, 5, 10 or 25 minutes (one Pomodoro).
+- Music sources: YouTube (the default; paste any YouTube URL to change the song, `t=` timestamps are honored), Synth (a version of the riff generated in the browser that works when YouTube is blocked, such as on school or office networks), or an audio file from the visitor's device (never uploaded).
+- Share links carry the duration: https://finalcountdown.app/?t=25m opens a 25 minute timer ready to start.
+- The last ten seconds turn yellow and pulse; the remaining time also shows in the browser tab title.
+
+## Pages
+
+- [Timer](https://finalcountdown.app/): the countdown timer itself.
+- [How it works](https://finalcountdown.app/how-it-works): durations, presets, the three music sources and share links.
+- [FAQ](https://finalcountdown.app/faq): whether it plays the song, cost, pausing, custom music, offline use, phones, sharing and tracking.
+- [Privacy](https://finalcountdown.app/privacy): Google Analytics usage statistics, the public visitor and share counts, and YouTube's privacy-enhanced player.
+
+## Optional
+
+- [Source code](https://github.com/garrelj1/final-countdown)

@@ -47,104 +47,18 @@
       ]
     },
     {
-      "@type": "FAQPage",
-      "@id": "https://finalcountdown.app/#faq",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Does this countdown timer play The Final Countdown?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. By default the timer plays the Europe track through an embedded YouTube player, and it starts and stops with the clock. If YouTube is blocked or unavailable, switch to Synth mode for a built-in version of the riff that is generated in your browser."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is the timer free?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. It is completely free, there is no account to create, nothing to install, and no ads. Open the page and press Start."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Does the music stop when I pause the timer?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. The audio is tied to the clock. Pausing the countdown pauses the music, resuming picks it back up, and resetting stops it and returns the track to the start."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I use my own music instead?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, in two ways. Paste any YouTube URL to swap the video, or choose File to play an audio file from your own device. Files you pick stay in your browser and are never uploaded."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Does it work without an internet connection?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "The Synth source does. It generates the riff locally with the Web Audio API, so it keeps working when YouTube is blocked, such as on a school or office network. The YouTube source needs a connection."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Does it work on phones and tablets?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. The layout adapts to phones, tablets and desktops. On mobile browsers you may need to tap the page once before audio is allowed to play, which is a restriction browsers apply to every site."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I share a timer with someone else?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Press Share this timer and you get a link with the duration built into it, so whoever opens it lands on the same countdown ready to start. On phones this opens your normal share sheet; on desktop the link is copied to your clipboard."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the 25 minute preset for?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "It is a Pomodoro work interval. The 25 minute preset gives you one focus session, and the shorter presets cover breaks, workout intervals and classroom activities."
-          }
-        }
-      ]
+      "@type": "WebSite",
+      "@id": "https://finalcountdown.app/#website",
+      "name": "Final Countdown Timer",
+      "url": "https://finalcountdown.app/"
     }
   ]
 }
 </script>
+<link rel="stylesheet" href="/site.css">
+<script src="/analytics.js"></script>
 <style>
-  :root {
-    --cyan: #22e6ff;
-    --magenta: #ff2fd0;
-    --yellow: #ffd23f;
-    --bg: #07020f;
-  }
-  * { box-sizing: border-box; }
-  html { height: 100%; }
-  /* min-height, not height: with flex centering, content taller than the
-     viewport would otherwise get its top clipped off-screen unreachably. */
-  body { min-height: 100%; margin: 0; }
-  body {
-    background:
-      radial-gradient(ellipse at 50% 120%, #4a0f6b 0%, transparent 60%),
-      radial-gradient(ellipse at 50% -20%, #0b2a5e 0%, transparent 55%),
-      var(--bg);
-    background-attachment: fixed;
-    color: #eaf6ff;
-    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-x: hidden;
-  }
-  /* The timer owns the first screen; the reference content sits below the fold.
+  /* The timer owns the first screen; only the footer sits below the fold.
      min-height, not height: content taller than the viewport would otherwise
      get its top clipped off-screen unreachably. */
   .hero {
@@ -158,22 +72,15 @@
     padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
              max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
   }
-  /* Horizon grid. Anchored to the hero rather than the viewport so it scrolls
-     away with the timer instead of sitting on top of the text below. */
-  /* clip, not hidden: the grid overhangs both edges and would otherwise widen
-     the page, but hiding overflow outright could clip tall content vertically. */
-  .hero { position: relative; overflow-x: clip; }
+  /* The sunset scene. Anchored to the hero rather than the viewport so it
+     scrolls away with the timer instead of sitting under the footer. */
+  .hero { position: relative; overflow-x: clip; --backing: rgba(7,2,15,.72); }
   .hero::after {
     content: "";
     position: absolute;
-    left: -50%; right: -50%; bottom: 0; height: 45vh;
-    background-image:
-      repeating-linear-gradient(to right, rgba(255,47,208,.35) 0 1px, transparent 1px 80px),
-      repeating-linear-gradient(to bottom, rgba(34,230,255,.30) 0 1px, transparent 1px 60px);
-    transform: perspective(320px) rotateX(72deg);
-    transform-origin: bottom center;
+    inset: 0;
+    background: url(/scene.svg) center bottom / cover no-repeat;
     pointer-events: none;
-    opacity: .5;
   }
   main {
     position: relative;
@@ -183,18 +90,11 @@
   }
   h1 {
     margin: 0 0 4px;
-    font-size: clamp(1.1rem, 4vw, 1.8rem);
+    font-size: clamp(1.25rem, 4.6vw, 2.2rem);
     letter-spacing: .35em;
     text-transform: uppercase;
     color: var(--cyan);
     text-shadow: 0 0 12px rgba(34,230,255,.8), 0 0 42px rgba(34,230,255,.35);
-  }
-  .sub {
-    margin: 0;
-    font-size: .72rem;
-    letter-spacing: .28em;
-    text-transform: uppercase;
-    color: rgba(255,47,208,.85);
   }
   #display {
     font-size: clamp(3rem, 17vw, 7.5rem);
@@ -208,6 +108,7 @@
     transition: color .2s;
   }
   #display.warn { color: var(--yellow); text-shadow: 0 0 12px var(--yellow), 0 0 55px rgba(255,120,0,.6); animation: pulse .5s steps(2) infinite; }
+  #display.long { font-size: clamp(2.4rem, 12vw, 5.5rem); }
   #display.done { color: var(--magenta); text-shadow: 0 0 14px var(--magenta), 0 0 70px rgba(255,47,208,.7); }
   @keyframes pulse { 50% { opacity: .35; } }
 
@@ -237,26 +138,30 @@
     padding: 12px 20px;
     border-radius: 8px;
     border: 1px solid rgba(34,230,255,.55);
-    background: linear-gradient(180deg, rgba(34,230,255,.16), rgba(34,230,255,.04));
+    background: linear-gradient(180deg, rgba(34,230,255,.16), rgba(34,230,255,.04)), var(--backing);
     color: #dffbff;
     cursor: pointer;
     transition: transform .08s, box-shadow .15s, background .15s;
   }
-  button:hover:not(:disabled) { box-shadow: 0 0 18px rgba(34,230,255,.45); background: rgba(34,230,255,.25); }
+  button:hover:not(:disabled) { box-shadow: 0 0 18px rgba(34,230,255,.45); background: linear-gradient(rgba(34,230,255,.25), rgba(34,230,255,.25)), var(--backing); }
   button:active:not(:disabled) { transform: translateY(1px); }
   button:disabled { opacity: .35; cursor: not-allowed; }
-  button.primary { border-color: var(--magenta); background: linear-gradient(180deg, rgba(255,47,208,.28), rgba(255,47,208,.06)); color: #ffe9fa; }
-  button.primary:hover:not(:disabled) { box-shadow: 0 0 22px rgba(255,47,208,.5); background: rgba(255,47,208,.35); }
-  button.chip { padding: 7px 12px; font-size: .7rem; border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.05); }
+  button.primary { border-color: var(--magenta); background: linear-gradient(180deg, rgba(255,47,208,.28), rgba(255,47,208,.06)), var(--backing); color: #ffe9fa; }
+  button.primary:hover:not(:disabled) { box-shadow: 0 0 22px rgba(255,47,208,.5); background: linear-gradient(rgba(255,47,208,.35), rgba(255,47,208,.35)), var(--backing); }
+  button.chip { padding: 7px 12px; font-size: .7rem; border-color: rgba(255,255,255,.25); background: linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), var(--backing); }
   /* Yellow is the one brand colour no other control uses, so Share reads as
      its own thing without competing with Start for attention. */
   button.share {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     border-color: rgba(255,210,63,.45);
-    background: linear-gradient(180deg, rgba(255,210,63,.15), rgba(255,210,63,.03));
+    background: linear-gradient(180deg, rgba(255,210,63,.15), rgba(255,210,63,.03)), var(--backing);
     color: #ffeaa8;
     min-width: 148px;
   }
-  button.share:hover:not(:disabled) { box-shadow: 0 0 20px rgba(255,210,63,.4); background: rgba(255,210,63,.22); }
+  button.share:hover:not(:disabled) { box-shadow: 0 0 20px rgba(255,210,63,.4); background: linear-gradient(rgba(255,210,63,.22), rgba(255,210,63,.22)), var(--backing); }
   /* Totals arrive after first paint, so each line reserves its height up
      front; filling it in must not push the clock or controls down. */
   .tally {
@@ -267,8 +172,46 @@
     text-transform: uppercase;
     font-variant-numeric: tabular-nums;
   }
-  .visit-tally { margin: 6px 0 22px; color: rgba(223,251,255,.5); }
+  .visit-tally {
+    margin: 8px 0 22px;
+    font-size: .82rem;
+    letter-spacing: .16em;
+    color: rgba(234,246,255,.9);
+    text-shadow: 0 0 10px rgba(34,230,255,.5);
+  }
+  .visit-rank { color: var(--yellow); text-shadow: 0 0 10px rgba(255,210,63,.6); }
   .share-tally { margin: 8px 0 0; color: rgba(255,234,168,.6); }
+  .share-block { margin-top: 18px; }
+
+  /* Wide screens: the title pinned to the top, then the clock on the left
+     and music and sharing on the right, centered in the space below, so the
+     whole app fits one screen without shrinking the clock. */
+  @media (min-width: 960px) {
+    .hero { align-items: stretch; padding-top: max(24px, 10svh); }
+    main {
+      width: min(1120px, 100%);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: auto 1fr;
+      grid-template-areas: "head head" "clock side";
+      column-gap: clamp(56px, 40vw - 252px, 260px);
+      align-items: center;
+    }
+    .masthead { grid-area: head; align-self: start; }
+    .clock { grid-area: clock; }
+    .side {
+      grid-area: side;
+      padding: 24px;
+      border: 1px solid rgba(34,230,255,.18);
+      border-radius: 14px;
+      background: rgba(7,2,15,.78);
+    }
+    .side .panel { margin-top: 0; padding-top: 0; border-top: 0; }
+    #yt-wrap { width: 100%; }
+    .visit-tally { margin-bottom: 30px; }
+    .seg button { padding: 9px 10px; letter-spacing: .1em; }
+    .side input[type="range"] { width: 90px; }
+  }
 
   .panel {
     margin-top: 30px;
@@ -278,7 +221,7 @@
     letter-spacing: .1em;
     color: rgba(234,246,255,.55);
   }
-  .seg { display: inline-flex; border: 1px solid rgba(34,230,255,.4); border-radius: 8px; overflow: hidden; }
+  .seg { display: inline-flex; border: 1px solid rgba(34,230,255,.4); border-radius: 8px; overflow: hidden; background: var(--backing); }
   .seg button {
     border: 0; border-radius: 0; background: transparent; padding: 9px 16px; font-size: .68rem;
   }
@@ -288,7 +231,10 @@
   }
   .hidden { display: none !important; }
   #yt-wrap { margin: 16px auto 0; width: min(400px, 100%); }
+  /* YouTube's embed rules require a player of at least 200 x 200 px. */
   #yt-frame {
+    width: 100%;
+    min-height: 200px;
     aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden;
     border: 1px solid rgba(34,230,255,.35); box-shadow: 0 0 26px rgba(34,230,255,.18); background: #000;
   }
@@ -302,69 +248,6 @@
   input[type="file"] { font: inherit; font-size: .68rem; color: rgba(234,246,255,.55); max-width: 230px; }
   .note { margin-top: 14px; line-height: 1.7; text-transform: none; letter-spacing: .02em; font-size: .68rem; }
 
-  /* ------------------------------------------------------------------ *
-   * Below-the-fold reference content. Long-form prose in the monospace
-   * face is rough to read, so only the headings keep the arcade look.
-   * ------------------------------------------------------------------ */
-  .prose {
-    position: relative;
-    z-index: 1;
-    width: min(720px, 100%);
-    padding: 0 max(24px, env(safe-area-inset-left)) 72px max(24px, env(safe-area-inset-right));
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    font-size: .95rem;
-    line-height: 1.75;
-    color: rgba(234,246,255,.76);
-  }
-  .prose section { padding: 36px 0 4px; border-top: 1px solid rgba(255,255,255,.08); }
-  .prose h2, .prose h3 {
-    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    text-transform: uppercase;
-    line-height: 1.4;
-  }
-  .prose h2 {
-    margin: 0 0 14px;
-    font-size: 1rem;
-    letter-spacing: .22em;
-    color: var(--cyan);
-    text-shadow: 0 0 16px rgba(34,230,255,.45);
-  }
-  .prose h3 {
-    margin: 26px 0 6px;
-    font-size: .8rem;
-    letter-spacing: .14em;
-    color: rgba(255,47,208,.92);
-  }
-  .prose p { margin: 0 0 14px; }
-  .prose ul, .prose ol { margin: 0 0 14px; padding-left: 20px; }
-  .prose li { margin-bottom: 8px; }
-  .prose li::marker { color: rgba(255,47,208,.7); }
-  .prose strong { color: #eaf6ff; font-weight: 600; }
-  .prose code {
-    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    font-size: .86em;
-    color: var(--yellow);
-    background: rgba(255,210,63,.08);
-    border-radius: 4px;
-    padding: 1px 5px;
-  }
-  .prose a { color: var(--cyan); text-underline-offset: 3px; text-decoration-color: rgba(34,230,255,.45); }
-  .prose a:hover { color: var(--magenta); text-decoration-color: rgba(255,47,208,.6); }
-  .prose kbd {
-    font: inherit; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .8em;
-    border: 1px solid rgba(34,230,255,.4); border-radius: 5px; padding: 1px 6px;
-    background: rgba(34,230,255,.08); color: #dffbff;
-  }
-  .site-footer {
-    width: min(720px, 100%);
-    padding: 0 24px 48px;
-    font-size: .68rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: rgba(234,246,255,.4);
-    text-align: center;
-  }
-  .site-footer a { color: rgba(34,230,255,.75); }
 
   /* Touch devices: 16px inputs so iOS doesn't zoom the page on focus,
      and roomier tap targets on the small controls. */
@@ -378,12 +261,13 @@
   /* Narrow phones */
   @media (max-width: 480px) {
     .hero { padding: 16px 12px; }
-    .prose { padding-left: 18px; padding-right: 18px; font-size: .92rem; }
     h1 { letter-spacing: .2em; }
     .visit-tally { margin-bottom: 14px; }
-    #input { width: 100%; }
-    #start, #reset { flex: 1; }
-    .panel { margin-top: 22px; }
+    .clock .row:first-of-type { flex-wrap: nowrap; }
+    #input { width: 128px; flex: none; font-size: 1.1rem; padding: 12px 8px; }
+    #start, #reset { flex: 1; padding-left: 8px; padding-right: 8px; }
+    .panel { margin-top: 18px; padding-top: 14px; }
+    #display { margin-bottom: 14px; }
   }
 
   /* Short windows: landscape phones and small laptop viewports */
@@ -391,257 +275,119 @@
     #display { font-size: clamp(2.4rem, 13vh, 6rem); margin-bottom: 12px; }
     .visit-tally { margin-bottom: 10px; }
     .panel { margin-top: 18px; padding-top: 12px; }
-    #yt-wrap { width: min(320px, 100%); }
   }
+
+  /* Phones: one compact column that fits the clock, controls, player and
+     Share on one screen. Last, so the short-window rules above can't undo it. */
+  @media (max-width: 480px) {
+    #display { font-size: 4rem; margin: 4px 0 12px; }
+    .visit-tally { margin-bottom: 8px; font-size: .74rem; letter-spacing: .12em; }
+    .panel { margin-top: 14px; padding-top: 12px; }
+    .seg button { padding: 11px 10px; letter-spacing: .08em; }
+    .vol-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    input[type="range"] { width: 96px; }
+    #yt-wrap { margin-top: 10px; }
+    #yt-url { margin-top: 8px; }
+    #yt-status { margin-top: 4px; }
+    .share-block { margin-top: 8px; }
+  }
+
+  @media (max-width: 959px) {
+    .hero::after { opacity: .45; }
+  }
+
+  /* Wide screens scale the whole app up, but only where the screen is tall
+     enough for the scaled app to still fit one screen. */
+  @media (min-width: 1440px) and (min-height: 880px) { main { zoom: 1.15; } }
+  @media (min-width: 1680px) and (min-height: 980px) { main { zoom: 1.3; } }
+  @media (min-width: 1920px) and (min-height: 1050px) { main { zoom: 1.45; } }
+  @media (min-width: 2400px) and (min-height: 1300px) { main { zoom: 1.8; } }
 
   @media (prefers-reduced-motion: reduce) {
     #display.warn { animation: none; }
     button { transition: none; }
   }
 </style>
-<script>
-const GA_MEASUREMENT_ID = 'G-XDC8NYV5WF';
-
-// EEA, UK and Switzerland need consent before analytics cookies; with no
-// banner, visitors there stay on cookieless pings. Google resolves the region.
-const CONSENT_REQUIRED_REGIONS = [
-  'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU',
-  'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES',
-  'SE', 'IS', 'LI', 'NO', 'GB', 'CH',
-];
-
-if (GA_MEASUREMENT_ID) {
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag() { dataLayer.push(arguments); };
-  const NO_ADS = { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' };
-  gtag('consent', 'default', { ...NO_ADS, analytics_storage: 'granted' });
-  gtag('consent', 'default', { ...NO_ADS, analytics_storage: 'denied', region: CONSENT_REQUIRED_REGIONS });
-  gtag('js', new Date());
-  gtag('config', GA_MEASUREMENT_ID);
-
-  const gaLibrary = document.createElement('script');
-  gaLibrary.async = true;
-  gaLibrary.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`;
-  document.head.appendChild(gaLibrary);
-}
-</script>
 </head>
 <body>
 <div class="hero">
 <main>
-  <h1>Final Countdown Timer</h1>
-  <p class="sub">Music plays only while the clock runs</p>
-  <p id="visits" class="tally visit-tally"></p>
+  <header class="masthead">
+    <h1>Final Countdown Timer</h1>
+    <p id="visits" class="tally visit-tally"></p>
+  </header>
 
-  <div id="display">00:00</div>
+  <section class="clock" aria-label="Timer">
+    <div id="display">00:00</div>
 
-  <div class="row">
-    <input id="input" type="text" value="00:30" placeholder="mm:ss" aria-label="Countdown duration">
-    <button id="start" class="primary">Start</button>
-    <button id="reset" disabled>Reset</button>
-  </div>
-
-  <div class="row">
-    <button class="chip" data-preset="30">30s</button>
-    <button class="chip" data-preset="60">1m</button>
-    <button class="chip" data-preset="180">3m</button>
-    <button class="chip" data-preset="300">5m</button>
-    <button class="chip" data-preset="600">10m</button>
-    <button class="chip" data-preset="1500">25m</button>
-  </div>
-
-  <div class="row">
-    <button id="share" class="chip share" aria-label="Share a link to this timer">Share this timer</button>
-  </div>
-  <p id="shares" class="tally share-tally" aria-live="polite"></p>
-
-  <div class="panel">
     <div class="row">
-      <div class="seg" role="group" aria-label="Audio source">
-        <button data-source="youtube" aria-pressed="true">YouTube</button>
-        <button data-source="synth" aria-pressed="false">Synth</button>
-        <button data-source="file" aria-pressed="false">File</button>
+      <input id="input" type="text" value="00:30" placeholder="mm:ss" aria-label="Countdown duration">
+      <button id="start" class="primary">Start</button>
+      <button id="reset" disabled>Reset</button>
+    </div>
+
+    <div class="row">
+      <button class="chip" data-preset="30">30s</button>
+      <button class="chip" data-preset="60">1m</button>
+      <button class="chip" data-preset="180">3m</button>
+      <button class="chip" data-preset="300">5m</button>
+      <button class="chip" data-preset="600">10m</button>
+      <button class="chip" data-preset="1500">25m</button>
+    </div>
+  </section>
+
+  <section class="side" aria-label="Music and sharing">
+    <div class="panel">
+      <div class="row">
+        <div class="seg" role="group" aria-label="Audio source">
+          <button data-source="youtube" aria-pressed="true">YouTube</button>
+          <button data-source="synth" aria-pressed="false">Synth</button>
+          <button data-source="file" aria-pressed="false">File</button>
+        </div>
+        <label><span class="vol-text">Volume</span> <input id="vol" type="range" min="0" max="100" value="70" aria-label="Volume"></label>
       </div>
-      <label>Volume <input id="vol" type="range" min="0" max="100" value="70"></label>
+
+      <div id="yt-wrap">
+        <div id="yt-frame"><div id="yt-player"></div></div>
+        <input id="yt-url" type="text" spellcheck="false"
+               placeholder="Paste a YouTube URL"
+               aria-label="YouTube video URL">
+        <div id="yt-status" role="status"></div>
+      </div>
+
+      <div id="file-wrap" class="hidden">
+        <label style="margin-top:14px">Audio file <input id="file" type="file" accept="audio/*"></label>
+      </div>
     </div>
 
-    <div id="yt-wrap">
-      <div id="yt-frame"><div id="yt-player"></div></div>
-      <input id="yt-url" type="text" spellcheck="false"
-             placeholder="Paste a YouTube URL to swap the video"
-             aria-label="YouTube video URL">
-      <div id="yt-status" role="status"></div>
+    <div class="share-block">
+      <div class="row">
+        <button id="share" class="chip share" aria-label="Share a link to this timer">
+          <svg class="share-icon" aria-hidden="true" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.8l7.4-4.4M8.3 13.2l7.4 4.4"/></svg>
+          <span id="share-label">Share this timer</span>
+        </button>
+      </div>
+      <p id="shares" class="tally share-tally" aria-live="polite"></p>
     </div>
-
-    <div id="file-wrap" class="hidden">
-      <label style="margin-top:14px">Audio file <input id="file" type="file" accept="audio/*"></label>
-    </div>
-
-    <p class="note" id="source-note"></p>
-  </div>
+  </section>
 </main>
 </div>
 
-<article class="prose">
-  <section>
-    <h2>A countdown timer with a soundtrack</h2>
-    <p>
-      Most online timers end with a beep. This one plays <strong>The Final Countdown</strong> for
-      the whole run instead, and the music is wired directly to the clock: it starts when you press
-      Start, pauses when you pause, and cuts out the instant the timer is reset. When the clock
-      reaches zero you get a short fanfare.
-    </p>
-    <p>
-      It runs entirely in your browser. There is nothing to install, no account to create, no ads,
-      and no tracking. It works on phones, tablets and desktops, and every setting stays on your own
-      device.
-    </p>
-  </section>
-
-  <section>
-    <h2>How to use the timer</h2>
-    <ol>
-      <li>
-        Type a duration into the box and press <kbd>Enter</kbd> or hit <strong>Start</strong>. It
-        understands most ways of writing a time: <code>90</code> for ninety seconds,
-        <code>5:00</code> for five minutes, <code>1:02:03</code> for just over an hour, and shorthand
-        like <code>5m</code> or <code>1h30m</code>.
-      </li>
-      <li>Or skip the typing and tap one of the presets underneath.</li>
-      <li>
-        <strong>Start</strong> becomes <strong>Pause</strong> while the clock runs, then
-        <strong>Resume</strong>. Pausing holds both the time and the music exactly where they are.
-      </li>
-      <li><strong>Reset</strong> stops everything and puts the clock back to your chosen duration.</li>
-    </ol>
-    <p>
-      The last ten seconds turn yellow and pulse so you get a warning without having to watch the
-      screen. The remaining time is also mirrored into the browser tab title, so you can leave the
-      timer running in a background tab and still keep an eye on it.
-    </p>
-  </section>
-
-  <section>
-    <h2>Presets</h2>
-    <p>The six preset buttons cover the durations people reach for most often:</p>
-    <ul>
-      <li><strong>30 seconds and 1 minute</strong> — plank holds, sprint intervals, speed rounds in a game, brushing your teeth.</li>
-      <li><strong>3 minutes</strong> — steeping tea, a boxing round, a lightning talk.</li>
-      <li><strong>5 and 10 minutes</strong> — classroom activities, meeting segments, a warm-up, a short break.</li>
-      <li><strong>25 minutes</strong> — one Pomodoro focus session.</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Three ways to play the music</h2>
-    <h3>YouTube</h3>
-    <p>
-      The default. It plays the track through an embedded, privacy-friendly YouTube player. You can
-      paste any other YouTube URL to swap in a different song, and a <code>t=</code> timestamp in the
-      URL is honoured, so you can start a video part-way through.
-    </p>
-    <h3>Synth</h3>
-    <p>
-      A version of the riff generated live in your browser with the Web Audio API — bassline, drums,
-      slapback echo and all. Because nothing is streamed, this option keeps working when YouTube is
-      blocked or unavailable, which is often the case on school and office networks. It also starts
-      instantly.
-    </p>
-    <h3>Your own file</h3>
-    <p>
-      Pick any audio file from your device and it becomes the timer's soundtrack. The file is played
-      locally and is never uploaded anywhere.
-    </p>
-  </section>
-
-  <section>
-    <h2>Share a timer</h2>
-    <p>
-      The <strong>Share this timer</strong> button hands you a link with the duration already in it,
-      as a <code>?t=</code> parameter — <code>?t=25m</code> for a Pomodoro,
-      <code>?t=3m</code> for a boxing round. Open that link and the timer is set and waiting, so you
-      can drop a ready-made countdown into a group chat, a lesson plan or a workout post.
-    </p>
-    <p>
-      On phones the button opens your usual share sheet. On desktop it copies the link straight to
-      your clipboard.
-    </p>
-  </section>
-
-  <section id="faq">
-    <h2>Frequently asked questions</h2>
-
-    <h3>Does this countdown timer play The Final Countdown?</h3>
-    <p>
-      Yes. By default the timer plays the Europe track through an embedded YouTube player, and it
-      starts and stops with the clock. If YouTube is blocked or unavailable, switch to Synth mode for
-      a built-in version of the riff that is generated in your browser.
-    </p>
-
-    <h3>Is the timer free?</h3>
-    <p>
-      Yes. It is completely free, there is no account to create, nothing to install, and no ads. Open
-      the page and press Start.
-    </p>
-
-    <h3>Does the music stop when I pause the timer?</h3>
-    <p>
-      Yes. The audio is tied to the clock. Pausing the countdown pauses the music, resuming picks it
-      back up, and resetting stops it and returns the track to the start.
-    </p>
-
-    <h3>Can I use my own music instead?</h3>
-    <p>
-      Yes, in two ways. Paste any YouTube URL to swap the video, or choose File to play an audio file
-      from your own device. Files you pick stay in your browser and are never uploaded.
-    </p>
-
-    <h3>Does it work without an internet connection?</h3>
-    <p>
-      The Synth source does. It generates the riff locally with the Web Audio API, so it keeps
-      working when YouTube is blocked, such as on a school or office network. The YouTube source
-      needs a connection.
-    </p>
-
-    <h3>Can I share a timer with someone else?</h3>
-    <p>
-      Yes. Press <strong>Share this timer</strong> and you get a link with the duration built into
-      it, so whoever opens it lands on the same countdown ready to start. On phones this opens your
-      normal share sheet; on desktop the link is copied to your clipboard.
-    </p>
-
-    <h3>Does it work on phones and tablets?</h3>
-    <p>
-      Yes. The layout adapts to phones, tablets and desktops. On mobile browsers you may need to tap
-      the page once before audio is allowed to play, which is a restriction browsers apply to every
-      site.
-    </p>
-
-    <h3>What is the 25 minute preset for?</h3>
-    <p>
-      It is a Pomodoro work interval. The 25 minute preset gives you one focus session, and the
-      shorter presets cover breaks, workout intervals and classroom activities.
-    </p>
-  </section>
-</article>
-
 <footer class="site-footer">
-  <p>
-    Free to use, no sign-up. Built with the Web Audio API &middot;
+  <nav class="site-nav" aria-label="Site">
+    <a href="/" aria-current="page">Timer</a>
+    <a href="/how-it-works">How it works</a>
+    <a href="/faq">FAQ</a>
+    <a href="/privacy">Privacy</a>
     <a href="https://github.com/garrelj1/final-countdown">Source on GitHub</a>
-  </p>
+  </nav>
   <p>
-    Uses Google Analytics to count visits and shares, without cookies for visitors in the
-    EU, UK and Switzerland &middot;
-    <a href="https://policies.google.com/technologies/partner-sites">How Google uses this data</a>
+    A free online countdown timer that plays The Final Countdown while the clock runs and stops
+    the music the moment you pause. No sign-up, no install, no ads.
   </p>
 </footer>
 
 <script>
-function track(eventName, params) {
-  if (typeof window.gtag === 'function') window.gtag('event', eventName, params);
-}
-
 /* ------------------------------------------------------------------ *
  * Time parsing / formatting
  * ------------------------------------------------------------------ */
@@ -1018,7 +764,6 @@ const fileInput = document.getElementById('file');
 const ytWrap = document.getElementById('yt-wrap');
 const ytUrl = document.getElementById('yt-url');
 const fileWrap = document.getElementById('file-wrap');
-const sourceNote = document.getElementById('source-note');
 
 let state = 'idle';        // idle | running | paused | done
 let source = 'youtube';    // youtube | synth | file
@@ -1029,6 +774,7 @@ let userTrack = null;
 
 function render() {
   display.textContent = state === 'done' ? '00:00' : format(remaining);
+  display.classList.toggle('long', remaining >= 3600 && state !== 'done');
   display.classList.toggle('warn', state === 'running' && remaining <= 10);
   display.classList.toggle('done', state === 'done');
   document.title = state === 'running'
@@ -1144,12 +890,6 @@ volumeSlider.addEventListener('input', () => {
   if (ytReady && ytPlayer) ytPlayer.setVolume(+volumeSlider.value);
 });
 
-const NOTES = {
-  youtube: 'Streams the official video straight from YouTube. The player stays visible — that’s how embedding is meant to work.',
-  synth:   'A synthesized homage to the riff, generated live in your browser. No network, no embed.',
-  file:    'Plays an audio file from your own machine. It never leaves this device.',
-};
-
 function setSource(next) {
   if (next === source) return;
   musicStop();
@@ -1158,7 +898,6 @@ function setSource(next) {
     b.setAttribute('aria-pressed', String(b.dataset.source === next)));
   ytWrap.classList.toggle('hidden', next !== 'youtube');
   fileWrap.classList.toggle('hidden', next !== 'file');
-  sourceNote.textContent = NOTES[next];
   ytStatus('');
   if (next === 'youtube') ensurePlayer().then(primePlayer).catch(() => {});
   if (state === 'running') musicStart();
@@ -1199,7 +938,8 @@ window.addEventListener('pagehide', musicStop);
  * opens it lands on the same timer rather than the default one.
  * ------------------------------------------------------------------ */
 const shareBtn = document.getElementById('share');
-const SHARE_LABEL = shareBtn.textContent;
+const shareLabel = document.getElementById('share-label');
+const SHARE_LABEL = shareLabel.textContent;
 let shareRevert = null;
 
 /* Seconds -> the shorthand parseDuration already understands ("25m"). */
@@ -1218,9 +958,9 @@ function shareUrl() {
 }
 
 function shareFeedback(msg) {
-  shareBtn.textContent = msg;
+  shareLabel.textContent = msg;
   clearTimeout(shareRevert);
-  shareRevert = setTimeout(() => { shareBtn.textContent = SHARE_LABEL; }, 2200);
+  shareRevert = setTimeout(() => { shareLabel.textContent = SHARE_LABEL; }, 2200);
 }
 
 function recordShare(method) {
@@ -1285,8 +1025,15 @@ const visitsLabel = document.getElementById('visits');
 const sharesLabel = document.getElementById('shares');
 const countFormat = new Intl.NumberFormat('en-US');
 
-function visitsText(n) {
-  return `${countFormat.format(n)} ${n === 1 ? 'visit' : 'visits'}`;
+const ordinalRule = new Intl.PluralRules('en-US', { type: 'ordinal' });
+const ORDINAL_SUFFIX = { one: 'st', two: 'nd', few: 'rd', other: 'th' };
+
+function showVisits(total) {
+  if (!Number.isSafeInteger(total) || total < 1) return;
+  const rank = document.createElement('span');
+  rank.className = 'visit-rank';
+  rank.textContent = `${countFormat.format(total)}${ORDINAL_SUFFIX[ordinalRule.select(total)]}`;
+  visitsLabel.replaceChildren('You’re the ', rank, ' rocker');
 }
 
 function sharesText(n) {
@@ -1306,14 +1053,13 @@ function postTally(path) {
 }
 
 postTally('/api/visits')
-  .then(({ visits, shares }) => {
-    showTotal(visitsLabel, visits, visitsText);
+  .then(({ rank, shares }) => {
+    showVisits(rank);
     showTotal(sharesLabel, shares, sharesText);
   })
   .catch(() => {});
 
 remaining = parseDuration(input.value) || 0;
-sourceNote.textContent = NOTES[source];
 syncButtons();
 render();
 
