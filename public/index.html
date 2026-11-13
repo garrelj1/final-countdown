@@ -97,7 +97,7 @@
   }
   h1 {
     margin: 0 0 4px;
-    font-size: clamp(1.1rem, 4vw, 1.8rem);
+    font-size: clamp(1.25rem, 4.6vw, 2.2rem);
     letter-spacing: .35em;
     text-transform: uppercase;
     color: var(--cyan);
@@ -183,18 +183,21 @@
   .share-tally { margin: 8px 0 0; color: rgba(255,234,168,.6); }
   .share-block { margin-top: 18px; }
 
-  /* Wide screens: the clock on the left, music and sharing on the right,
-     so the whole app fits one screen without shrinking the clock. */
+  /* Wide screens: the title pinned to the top, then the clock on the left
+     and music and sharing on the right, centered in the space below, so the
+     whole app fits one screen without shrinking the clock. */
   @media (min-width: 960px) {
+    .hero { align-items: stretch; }
     main {
       width: min(1120px, 100%);
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: auto 1fr;
       grid-template-areas: "head head" "clock side";
       column-gap: 56px;
       align-items: center;
     }
-    .masthead { grid-area: head; }
+    .masthead { grid-area: head; align-self: start; }
     .clock { grid-area: clock; }
     .side {
       grid-area: side;
@@ -1009,8 +1012,11 @@ const visitsLabel = document.getElementById('visits');
 const sharesLabel = document.getElementById('shares');
 const countFormat = new Intl.NumberFormat('en-US');
 
+const ordinalRule = new Intl.PluralRules('en-US', { type: 'ordinal' });
+const ORDINAL_SUFFIX = { one: 'st', two: 'nd', few: 'rd', other: 'th' };
+
 function visitsText(n) {
-  return `${countFormat.format(n)} ${n === 1 ? 'visit' : 'visits'}`;
+  return `You’re the ${countFormat.format(n)}${ORDINAL_SUFFIX[ordinalRule.select(n)]} visitor`;
 }
 
 function sharesText(n) {
