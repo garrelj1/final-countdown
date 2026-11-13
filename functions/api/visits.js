@@ -1,9 +1,9 @@
-import { recordVisit } from '../../lib/visits/d1-visit-store.js';
+import { recordVisit } from '../../lib/counters/d1-counter-store.js';
 
 export async function onRequestPost({ env }) {
-  const count = await recordVisit(env.DB);
+  const { visits, shares } = await recordVisit(env.DB);
   return Response.json(
-    { visits: count.total },
+    { visits: visits.value, shares: shares.value },
     { headers: { 'Cache-Control': 'no-store' } },
   );
 }

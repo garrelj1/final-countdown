@@ -1,11 +1,11 @@
-# Analytics and public visit counter
+# Analytics and public counters
 
 Date: 2026-11-13
 
 ## Goal
 
 Know how people use the timer, especially sharing, and show a public visit
-count on the page.
+count and share count on the page.
 
 ## Decisions
 
@@ -42,22 +42,30 @@ gtag is absent.
 
 The footer discloses Google Analytics use, as Google's terms require.
 
-## Visit counter
+## Public counters
+
+Two public totals: visits, shown under the subtitle, and shares, shown as a
+caption under the Share button. A share is counted at the same moments as
+the GA `share` event. The caption counts shares, not people, so it reads
+"Shared 1,204 times" ("Shared once", "Shared twice"), and "Be the first" at
+zero.
 
 | Role | Home |
 | --- | --- |
-| Fact | D1 table `visit_counter`, one row enforced by `CHECK (id = 1)` |
-| Mechanism | Atomic upsert in `lib/visits/d1-visit-store.js` |
-| Core entity | `VisitCount` in `lib/visits/visit-count.js` (non-negative integer) |
-| Inbound adapter | `functions/api/visits.js`, `POST /api/visits` returns `{ "visits": n }` |
-| Presentation | Page formats the number and shows it under Share |
-| View state | Counter element stays hidden until a valid total arrives |
+| Fact | D1 table `site_counters`, one row per counter name |
+| Mechanism | Atomic upsert in `lib/counters/d1-counter-store.js` |
+| Core entity | `CounterTotal` in `lib/counters/counter-total.js` (non-negative integer) |
+| Inbound adapters | `POST /api/visits` returns `{ "visits": n, "shares": n }`; `POST /api/shares` returns `{ "shares": n }` |
+| Presentation | Page formats the numbers and words the share caption |
+| View state | Each line reserves its height and stays blank until a valid total arrives |
 
-The page posts once per load. Any failure leaves the counter hidden rather
-than showing a wrong number.
+The page posts to `/api/visits` once per load and to `/api/shares` after
+each share. Any failure leaves the line blank rather than showing a wrong
+number. The reserved height means totals arriving after first paint never
+shift the layout.
 
-Known limit: anyone can call the endpoint to inflate the count. Not addressed
-until it happens.
+Known limit: anyone can call the endpoints to inflate the counts. Not
+addressed until it happens.
 
 ## Setup outside the repo
 
