@@ -72,22 +72,15 @@
     padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
              max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
   }
-  /* Horizon grid. Anchored to the hero rather than the viewport so it scrolls
-     away with the timer instead of sitting on top of the text below. */
-  /* clip, not hidden: the grid overhangs both edges and would otherwise widen
-     the page, but hiding overflow outright could clip tall content vertically. */
-  .hero { position: relative; overflow-x: clip; }
+  /* The sunset scene. Anchored to the hero rather than the viewport so it
+     scrolls away with the timer instead of sitting under the footer. */
+  .hero { position: relative; overflow-x: clip; --backing: rgba(7,2,15,.72); }
   .hero::after {
     content: "";
     position: absolute;
-    left: -50%; right: -50%; bottom: 0; height: 45vh;
-    background-image:
-      repeating-linear-gradient(to right, rgba(255,47,208,.35) 0 1px, transparent 1px 80px),
-      repeating-linear-gradient(to bottom, rgba(34,230,255,.30) 0 1px, transparent 1px 60px);
-    transform: perspective(320px) rotateX(72deg);
-    transform-origin: bottom center;
+    inset: 0;
+    background: url(/scene.svg) center bottom / cover no-repeat;
     pointer-events: none;
-    opacity: .5;
   }
   main {
     position: relative;
@@ -145,17 +138,17 @@
     padding: 12px 20px;
     border-radius: 8px;
     border: 1px solid rgba(34,230,255,.55);
-    background: linear-gradient(180deg, rgba(34,230,255,.16), rgba(34,230,255,.04));
+    background: linear-gradient(180deg, rgba(34,230,255,.16), rgba(34,230,255,.04)), var(--backing);
     color: #dffbff;
     cursor: pointer;
     transition: transform .08s, box-shadow .15s, background .15s;
   }
-  button:hover:not(:disabled) { box-shadow: 0 0 18px rgba(34,230,255,.45); background: rgba(34,230,255,.25); }
+  button:hover:not(:disabled) { box-shadow: 0 0 18px rgba(34,230,255,.45); background: linear-gradient(rgba(34,230,255,.25), rgba(34,230,255,.25)), var(--backing); }
   button:active:not(:disabled) { transform: translateY(1px); }
   button:disabled { opacity: .35; cursor: not-allowed; }
-  button.primary { border-color: var(--magenta); background: linear-gradient(180deg, rgba(255,47,208,.28), rgba(255,47,208,.06)); color: #ffe9fa; }
-  button.primary:hover:not(:disabled) { box-shadow: 0 0 22px rgba(255,47,208,.5); background: rgba(255,47,208,.35); }
-  button.chip { padding: 7px 12px; font-size: .7rem; border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.05); }
+  button.primary { border-color: var(--magenta); background: linear-gradient(180deg, rgba(255,47,208,.28), rgba(255,47,208,.06)), var(--backing); color: #ffe9fa; }
+  button.primary:hover:not(:disabled) { box-shadow: 0 0 22px rgba(255,47,208,.5); background: linear-gradient(rgba(255,47,208,.35), rgba(255,47,208,.35)), var(--backing); }
+  button.chip { padding: 7px 12px; font-size: .7rem; border-color: rgba(255,255,255,.25); background: linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), var(--backing); }
   /* Yellow is the one brand colour no other control uses, so Share reads as
      its own thing without competing with Start for attention. */
   button.share {
@@ -164,11 +157,11 @@
     justify-content: center;
     gap: 8px;
     border-color: rgba(255,210,63,.45);
-    background: linear-gradient(180deg, rgba(255,210,63,.15), rgba(255,210,63,.03));
+    background: linear-gradient(180deg, rgba(255,210,63,.15), rgba(255,210,63,.03)), var(--backing);
     color: #ffeaa8;
     min-width: 148px;
   }
-  button.share:hover:not(:disabled) { box-shadow: 0 0 20px rgba(255,210,63,.4); background: rgba(255,210,63,.22); }
+  button.share:hover:not(:disabled) { box-shadow: 0 0 20px rgba(255,210,63,.4); background: linear-gradient(rgba(255,210,63,.22), rgba(255,210,63,.22)), var(--backing); }
   /* Totals arrive after first paint, so each line reserves its height up
      front; filling it in must not push the clock or controls down. */
   .tally {
@@ -179,7 +172,14 @@
     text-transform: uppercase;
     font-variant-numeric: tabular-nums;
   }
-  .visit-tally { margin: 6px 0 22px; color: rgba(223,251,255,.5); }
+  .visit-tally {
+    margin: 8px 0 22px;
+    font-size: .82rem;
+    letter-spacing: .16em;
+    color: rgba(234,246,255,.9);
+    text-shadow: 0 0 10px rgba(34,230,255,.5);
+  }
+  .visit-rank { color: var(--yellow); text-shadow: 0 0 10px rgba(255,210,63,.6); }
   .share-tally { margin: 8px 0 0; color: rgba(255,234,168,.6); }
   .share-block { margin-top: 18px; }
 
@@ -187,14 +187,14 @@
      and music and sharing on the right, centered in the space below, so the
      whole app fits one screen without shrinking the clock. */
   @media (min-width: 960px) {
-    .hero { align-items: stretch; }
+    .hero { align-items: stretch; padding-top: max(24px, 10svh); }
     main {
       width: min(1120px, 100%);
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       grid-template-rows: auto 1fr;
       grid-template-areas: "head head" "clock side";
-      column-gap: 56px;
+      column-gap: clamp(56px, 40vw - 252px, 260px);
       align-items: center;
     }
     .masthead { grid-area: head; align-self: start; }
@@ -204,11 +204,13 @@
       padding: 24px;
       border: 1px solid rgba(34,230,255,.18);
       border-radius: 14px;
-      background: rgba(7,2,15,.55);
+      background: rgba(7,2,15,.78);
     }
     .side .panel { margin-top: 0; padding-top: 0; border-top: 0; }
     #yt-wrap { width: 100%; }
     .visit-tally { margin-bottom: 30px; }
+    .seg button { padding: 9px 10px; letter-spacing: .1em; }
+    .side input[type="range"] { width: 90px; }
   }
 
   .panel {
@@ -219,7 +221,7 @@
     letter-spacing: .1em;
     color: rgba(234,246,255,.55);
   }
-  .seg { display: inline-flex; border: 1px solid rgba(34,230,255,.4); border-radius: 8px; overflow: hidden; }
+  .seg { display: inline-flex; border: 1px solid rgba(34,230,255,.4); border-radius: 8px; overflow: hidden; background: var(--backing); }
   .seg button {
     border: 0; border-radius: 0; background: transparent; padding: 9px 16px; font-size: .68rem;
   }
@@ -279,7 +281,7 @@
      Share on one screen. Last, so the short-window rules above can't undo it. */
   @media (max-width: 480px) {
     #display { font-size: 4rem; margin: 4px 0 12px; }
-    .visit-tally { margin-bottom: 8px; }
+    .visit-tally { margin-bottom: 8px; font-size: .74rem; letter-spacing: .12em; }
     .panel { margin-top: 14px; padding-top: 12px; }
     .seg button { padding: 11px 10px; letter-spacing: .08em; }
     .vol-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
@@ -289,6 +291,17 @@
     #yt-status { margin-top: 4px; }
     .share-block { margin-top: 8px; }
   }
+
+  @media (max-width: 959px) {
+    .hero::after { opacity: .45; }
+  }
+
+  /* Wide screens scale the whole app up, but only where the screen is tall
+     enough for the scaled app to still fit one screen. */
+  @media (min-width: 1440px) and (min-height: 880px) { main { zoom: 1.15; } }
+  @media (min-width: 1680px) and (min-height: 980px) { main { zoom: 1.3; } }
+  @media (min-width: 1920px) and (min-height: 1050px) { main { zoom: 1.45; } }
+  @media (min-width: 2400px) and (min-height: 1300px) { main { zoom: 1.8; } }
 
   @media (prefers-reduced-motion: reduce) {
     #display.warn { animation: none; }
@@ -1015,8 +1028,12 @@ const countFormat = new Intl.NumberFormat('en-US');
 const ordinalRule = new Intl.PluralRules('en-US', { type: 'ordinal' });
 const ORDINAL_SUFFIX = { one: 'st', two: 'nd', few: 'rd', other: 'th' };
 
-function visitsText(n) {
-  return `You’re the ${countFormat.format(n)}${ORDINAL_SUFFIX[ordinalRule.select(n)]} visitor`;
+function showVisits(total) {
+  if (!Number.isSafeInteger(total) || total < 1) return;
+  const rank = document.createElement('span');
+  rank.className = 'visit-rank';
+  rank.textContent = `${countFormat.format(total)}${ORDINAL_SUFFIX[ordinalRule.select(total)]}`;
+  visitsLabel.replaceChildren('You’re the ', rank, ' rocker');
 }
 
 function sharesText(n) {
@@ -1037,7 +1054,7 @@ function postTally(path) {
 
 postTally('/api/visits')
   .then(({ visits, shares }) => {
-    showTotal(visitsLabel, visits, visitsText);
+    showVisits(visits);
     showTotal(sharesLabel, shares, sharesText);
   })
   .catch(() => {});

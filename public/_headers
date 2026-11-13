@@ -23,3 +23,6 @@
 
 /llms.txt
   Cache-Control: public, max-age=3600
+
+/scene.svg
+  Cache-Control: public, max-age=86400

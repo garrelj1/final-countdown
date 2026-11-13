@@ -46,3 +46,24 @@ tune SEO and GEO (citation by AI answer engines) for the new structure.
   copy of the homepage.
 - The homepage footer carries a one-sentence description for crawlers,
   below the fold.
+
+## Revision: sunset scene and wide-screen scaling
+
+Reviewed as row D on the Claude Design canvas before building.
+
+- **Background:** `public/scene.svg`, original artwork in one 5 KB SVG: a
+  striped sun on a neon horizon, mountains, a grid floor, a road into the
+  sun, and a generic 80s wedge sports car from behind (no badges, not a real
+  model). It replaces the CSS horizon grid. Stacked layouts show it at 45%.
+- **Composition:** on wide screens the column gap grows to 260 px
+  (`clamp(56px, 40vw - 252px, 260px)`) so the clock and the music card frame
+  the sun, road and car instead of covering them.
+- **Readability:** every button, chip and the source switch sits on a dark
+  backing (`--backing`), and the music card is 78% opaque.
+- **Title** sits 10% down the screen on wide layouts, not pinned to the top.
+- **Visitor line:** "You're the 12,345th rocker", larger and brighter, with
+  the rank in yellow. "Rocker" nods to the song's glam-rock roots.
+- **Wide screens scale the app** with `zoom`, only where the scaled app
+  still fits one screen: 1.15× from 1440 × 880, 1.3× from 1680 × 980, 1.45×
+  from 1920 × 1050, 1.8× from 2400 × 1300. Measured fits: 1024×768 through
+  2560×1440, footer below the fold at each.

@@ -14,6 +14,9 @@
 - `/privacy` describes what the site collects. Change it in the same commit as
   any change to analytics events, the counters, or third-party requests.
 - New pages go in `sitemap.xml` and `llms.txt`.
+- `public/scene.svg` is the timer's background art. On wide screens its sun,
+  road and car must stay visible in the gap between the clock and the music
+  card; check that whenever the column widths or the scene change.
 
 ## This repository is public
 
