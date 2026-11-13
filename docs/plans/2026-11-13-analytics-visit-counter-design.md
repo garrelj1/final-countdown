@@ -64,7 +64,8 @@ until it happens.
 1. Done: `final-countdown` D1 database created and its id is in
    `wrangler.toml`.
 2. Done: migration applied with `npx wrangler d1 migrations apply final-countdown --remote`.
-3. Set `GA_MEASUREMENT_ID` in `public/index.html`.
+3. Done: GA4 web stream `G-XDC8NYV5WF`, set as `GA_MEASUREMENT_ID` in
+   `public/index.html`.
 
 ## Verification
 
