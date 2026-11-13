@@ -18,6 +18,13 @@
   road and car must stay visible in the gap between the clock and the music
   card; check that whenever the column widths or the scene change.
 
+## Visitor counter
+
+- `/api/visits` needs the `VISITOR_HASH_SECRET` secret: set in Cloudflare
+  Pages for production and preview, and in a local `.dev.vars` (gitignored)
+  for `wrangler pages dev`. Without it the visitor line stays blank.
+- Tests: `node --test tests/*.test.mjs`.
+
 ## This repository is public
 
 Everything here is world-readable at github.com/garrelj1/final-countdown:

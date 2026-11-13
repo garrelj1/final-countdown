@@ -67,3 +67,27 @@ Reviewed as row D on the Claude Design canvas before building.
   still fits one screen: 1.15× from 1440 × 880, 1.3× from 1680 × 980, 1.45×
   from 1920 × 1050, 1.8× from 2400 × 1300. Measured fits: 1024×768 through
   2560×1440, footer below the fold at each.
+
+## Revision: count each visitor once a day
+
+The visitor line counted page loads, so a reload showed the next rank. It
+now counts each visitor once per UTC day, without cookies or device storage.
+
+- **Key:** `HMAC(HMAC(VISITOR_HASH_SECRET, day), ip + "\n" + userAgent)`
+  (`lib/counters/visitor-key.js`). Deriving the key per day means a
+  visitor's keys on different days can't be linked, and none can be
+  reversed to an IP. The IP comes from `CF-Connecting-IP` and is never
+  stored.
+- **Store:** `visitor_ranks (visitor_key, day, rank)`. One atomic D1 batch
+  deletes earlier days, counts the visit only if the key is new, records
+  the rank, and reads it back, so a returning visitor sees the same rank.
+- **API:** `POST /api/visits` returns `{ "rank": n, "shares": n }`.
+- **Known cost:** a shared network with identical browsers, such as a
+  classroom of school laptops, counts as one visitor.
+- **Privacy:** `/privacy`, the FAQ answer and its structured data describe
+  the hashing and the daily deletion.
+
+Verified locally: repeat visits keep their rank without counting; a new
+browser or IP gets the next rank; 40 concurrent new visitors got 40 unique,
+consecutive ranks; rows from earlier days are deleted; a page reload keeps
+the same rank.

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Privacy: What the Final Countdown Timer Collects</title>
-<meta name="description" content="What the Final Countdown Timer collects: Google Analytics usage statistics, a public visit and share count with no personal data, and YouTube's privacy-enhanced player. No accounts, no ads.">
+<meta name="description" content="What the Final Countdown Timer collects: Google Analytics usage statistics, a public visitor and share count that never stores IP addresses, and YouTube's privacy-enhanced player. No accounts, no ads.">
 <meta name="theme-color" content="#07020f">
 <link rel="canonical" href="https://finalcountdown.app/privacy">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -12,14 +12,14 @@
 <meta property="og:site_name" content="Final Countdown Timer">
 <meta property="og:url" content="https://finalcountdown.app/privacy">
 <meta property="og:title" content="Privacy at the Final Countdown Timer">
-<meta property="og:description" content="Google Analytics usage statistics, a public visit and share count with no personal data, and YouTube's privacy-enhanced player. No accounts, no ads.">
+<meta property="og:description" content="Google Analytics usage statistics, a public visitor and share count that never stores IP addresses, and YouTube's privacy-enhanced player. No accounts, no ads.">
 <meta property="og:image" content="https://finalcountdown.app/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Final Countdown Timer: a neon countdown clock reading 00:30 over a synthwave grid.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Privacy at the Final Countdown Timer">
-<meta name="twitter:description" content="Google Analytics usage statistics, a public visit and share count with no personal data, and YouTube's privacy-enhanced player. No accounts, no ads.">
+<meta name="twitter:description" content="Google Analytics usage statistics, a public visitor and share count that never stores IP addresses, and YouTube's privacy-enhanced player. No accounts, no ads.">
 <meta name="twitter:image" content="https://finalcountdown.app/og.png">
 <script type="application/ld+json">
 {
@@ -58,7 +58,7 @@
   <h1>Privacy</h1>
   <p class="lede">
     The Final Countdown Timer has no accounts, no ads and no sign-up. It collects usage statistics
-    through Google Analytics and keeps a public count of visits and shares. Nothing is sold.
+    through Google Analytics and keeps a public count of visitors and shares. Nothing is sold.
   </p>
   <p class="updated">Last updated November 13, 2026.</p>
 
@@ -92,11 +92,19 @@
   </section>
 
   <section>
-    <h2>The visit and share counts</h2>
+    <h2>The visitor and share counts</h2>
     <p>
-      The numbers under the title and under the Share button are running totals. Each load of the
-      timer adds one visit, and each share adds one share. Only the two totals are stored: no IP
-      address, cookie, device identifier or timestamp is kept with them.
+      The number under the title counts each visitor once a day. To recognize a repeat visit, the
+      server combines your IP address and browser type with a secret key that changes every day and
+      keeps only the resulting code, together with the number it gave you. The code can't be turned
+      back into an IP address or linked to your code on any other day, and it is deleted by the first
+      visit after the day ends (UTC). Your IP address itself is never stored. People who share one
+      network and the same browser, such as a classroom of identical laptops, may count as one
+      visitor.
+    </p>
+    <p>
+      The number under the Share button is a running total: each share adds one, and nothing about
+      who shared is stored.
     </p>
   </section>
 

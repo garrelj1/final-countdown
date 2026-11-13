@@ -12,7 +12,7 @@
 - [Timer](https://finalcountdown.app/): the countdown timer itself.
 - [How it works](https://finalcountdown.app/how-it-works): durations, presets, the three music sources and share links.
 - [FAQ](https://finalcountdown.app/faq): whether it plays the song, cost, pausing, custom music, offline use, phones, sharing and tracking.
-- [Privacy](https://finalcountdown.app/privacy): Google Analytics usage statistics, the public visit and share counts, and YouTube's privacy-enhanced player.
+- [Privacy](https://finalcountdown.app/privacy): Google Analytics usage statistics, the public visitor and share counts, and YouTube's privacy-enhanced player.
 
 ## Optional
 

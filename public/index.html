@@ -1053,8 +1053,8 @@ function postTally(path) {
 }
 
 postTally('/api/visits')
-  .then(({ visits, shares }) => {
-    showVisits(visits);
+  .then(({ rank, shares }) => {
+    showVisits(rank);
     showTotal(sharesLabel, shares, sharesText);
   })
   .catch(() => {});
